@@ -5,12 +5,12 @@ const ccxt = require('../../ccxt')
 
 const weidex = new ccxt['weidex']({
     address: configs.jingtum1.address,
-    secret:configs.jingtum1.secret,
+    secret: configs.jingtum1.secret,
     enableRateLimit: true,
 })
 const huobipro = new ccxt['huobipro']({
     "apiKey": configs.huobi.access_key,
-    "secret":  configs.huobi.secretkey,
+    "secret": configs.huobi.secretkey,
     'verbose': false, // set to true to see more debugging output
     'timeout': 60000,
     'enableRateLimit': true
@@ -33,7 +33,7 @@ async function test() {
     console.log(configs);
     weidex.configs = configs
 
-    const coinpairConfigs = await weidex.fetch("https://weidex.vip/static/config/coins_pairs_config.json")
+    const coinpairConfigs = await weidex.fetch("https://jccdex.cn/static/config/coins_pairs_config.json")
     console.log(coinpairConfigs);
     weidex.coinpairConfigs = coinpairConfigs
 
@@ -42,7 +42,7 @@ async function test() {
         let marketHuobipro = await huobipro.fetchMarkets()
         let ordersWeidex = await weidex.fetchOrderBook(pair)
         let ordersHuobipro = await huobipro.fetchOrderBook(pair)
-        let data = [{ "key": "weidex", "exchange":weidex,"value": ordersWeidex }, { "key": "huobipro","exchange":huobipro, "value": ordersHuobipro }]
+        let data = [{ "key": "weidex", "exchange": weidex, "value": ordersWeidex }, { "key": "huobipro", "exchange": huobipro, "value": ordersHuobipro }]
         // let bids = [],
         //     asks = [];
         //     data.forEach(element => {
@@ -93,12 +93,12 @@ async function test() {
 
             if (price_diff < 0) {
                 console.log('oooooooo unlucky symbol {' + pair + '},no pair to make money')
-            }else{
+            } else {
                 let bidExchange = data.filter(o => o.key == bid_exchange)[0]
                 await bidExchange.exchange.createOrder(pair, "sell", bid_amount, max_bid1)
                 let askExchange = data.filter(o => o.key == ask_exchange)[0]
-                await askExchange.exchange.createOrder(pair, "limit","buy", ask_amount, min_ask1)
-               console.log("create order successful")
+                await askExchange.exchange.createOrder(pair, "limit", "buy", ask_amount, min_ask1)
+                console.log("create order successful")
             }
         }
 

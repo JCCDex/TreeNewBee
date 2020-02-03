@@ -3,17 +3,7 @@
 const configs={
     "huobi": {
         "access_key": "",
-        "secretkey": "",
-        "uid": "10076479",
-        "account_id_pro": "10076479",
-        "trade_password": "replace_me",
-        "privatekey": "replace_me",
-        "trade_pair": [{
-            "base": "xrp",
-            "quote": "usdt",
-            "symbol": "xrpusdt"
-        }
-    ]
+        "secretkey": ""
     },
     "okex":{
         "access_key": "",

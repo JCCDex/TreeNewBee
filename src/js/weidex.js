@@ -32,7 +32,7 @@ module.exports = class weidex extends Exchange {
                 'fetchTickers': false,
                 'fetchDepositAddress': false,
                 'fetchOHLCV': false,
-                'fetchOrder': false,
+                'fetchOrder': true,
                 'fetchOrders': true,
                 'fetchOpenOrders': true,
                 'fetchClosedOrders': false,
@@ -61,12 +61,12 @@ module.exports = class weidex extends Exchange {
                     'market': 'https://{hostname}',
                     'public': 'https://{hostname}',
                     'private': 'https://{hostname}',
-                    'zendesk': 'https://weidex.vip',
+                    'zendesk': 'https://jccdex.cn',
                 },
-                'www': 'https://www.weidex.vip',
-                'referral': 'https://www.weidex.vip',
-                'doc': 'https://weidex.vip',
-                'fees': 'https://weidex.vip',
+                'www': 'https://www.jccdex.cn',
+                'referral': 'https://www.jccdex.cn',
+                'doc': 'https://jccdex.cn',
+                'fees': 'https://jccdex.cn',
             },
             'api': {
                 'market': {
@@ -77,6 +77,9 @@ module.exports = class weidex extends Exchange {
                     'get': [
                         'info/depth/{currency}/{type}',
                         'exchange/balances/{address}',
+                        'exchange/detail/{hash}', // 挂单xingxi
+                    ],
+                    'post': [
                     ],
                 },
                 'private': {
@@ -141,14 +144,31 @@ module.exports = class weidex extends Exchange {
     async fetchBalance () {
         await this.loadMarkets ();
         const response = await this.publicGetExchangeBalancesAddress ({ 'address': this.address });
-        return response;
+        // return response;
+        const balances = response['data'];
+        const result = { 'info': response };
+        for (let i = 0; i < balances.length; i++) {
+            const balance = balances[i];
+            const currencyId = this.safeString (balance, 'currency');
+            const code = this.safeCurrencyCode (currencyId);
+            let account = undefined;
+            if (code in result) {
+                account = result[code];
+            } else {
+                account = this.account ();
+            }
+            account['free'] = this.safeFloat (balance, 'value');
+            account['used'] = this.safeFloat (balance, 'freezed');
+            result[code] = account;
+        }
+        return this.parseBalance (result);
     }
 
     async fetchOrders (_symbol = undefined, _p = 0) {
         return this.fetchOpenOrders (_symbol, _p);
     }
 
-    async fetchOpenOrders (symbol = undefined, p = undefined) {
+    async fetchOpenOrders (symbol = ' ', p = 0) {
         if (symbol === undefined) {
             throw new ArgumentsRequired (' fetchOpenOrders requires a symbol argument');
         }
@@ -156,13 +176,12 @@ module.exports = class weidex extends Exchange {
             throw new ArgumentsRequired (' fetchOpenOrders requires a symbol argument');
         }
         await this.loadMarkets ();
-        const market = this.market (symbol);
         const response = await this.privateGetWalletOfferUuid ({ 'p': p, 's': 100, 'w': this.address });
         let orders = undefined;
         if (response.code === '0') {
             orders = this.safeValue (response, 'data', []);
             if (orders.count > 0) {
-                return this.parseOrders (orders.list, market, undefined, 100);
+                return this.parseOrders (orders.list, undefined, undefined, 100);
             } else {
                 return [];
             }
@@ -205,7 +224,7 @@ module.exports = class weidex extends Exchange {
         //
         const id = this.safe_integer (order, 'seq');
         // let side = undefined;
-        let type = undefined;
+        const type = 'default';
         // let status = undefined;
         // if ('type' in order) {
         //     const orderType = order['type'].split ('-');
@@ -213,18 +232,8 @@ module.exports = class weidex extends Exchange {
         //     type = orderType[1];
         //     status = this.parseOrderStatus (this.safeString (order, 'state'));
         // }
-        // let symbol =order.takerGets.currency+"-"+order.takerPays.currency;
-        // if (market === undefined) {
-        //         if (symbol in this.markets_by_id) {
-        //             const marketId = order['symbol'];
-        //             market = this.markets_by_id[marketId];
-        //         }
-        // }
-        let side = undefined;
         let symbol = undefined;
-        if (market !== undefined) {
-            symbol = market['symbol'];
-        }
+        let side = undefined;
         const timestamp = this.safeInteger (order, 'time');
         let amount = 0;
         let counterAmount = 0;
@@ -232,14 +241,14 @@ module.exports = class weidex extends Exchange {
         const filled = 0;
         const status = 'open';
         if (order.flag === 1) {
+            symbol = order.takerPays.currency + '/' + order.takerGets.currency;
             amount = this.safeFloat (order.takerPays, 'value');
             counterAmount = this.safeFloat (order.takerGets, 'value');
-            type = 'buy';
             side = 'buy';
         } else {
+            symbol = order.takerGets.currency + '/' + order.takerPays.currency;
             amount = this.safeFloat (order.takerGets, 'value');
             counterAmount = this.safeFloat (order.takerPays, 'value');
-            type = 'sell';
             side = 'sell';
         }
         price = counterAmount / amount;
@@ -280,7 +289,7 @@ module.exports = class weidex extends Exchange {
         };
     }
 
-    async createOrder (symbol, side, amount, price) {
+    async createOrder (symbol, tradeType, side, num, price) {
         await this.loadMarkets ();
         const market = this.market (symbol);
         const hosts = this.configs.exHosts;
@@ -292,21 +301,41 @@ module.exports = class weidex extends Exchange {
         JCCExchange.init (hosts, port, https, retry);
         // create an order
         // buy 1 jcc with 1 swt
+        // const address = this.address;
+        // const secret = this.secret;
+        // // const amount = "1";
+        // const base = market.baseId;
+        // const counter = market.quoteId;
+        // // const sum = '1';
+        // // const type = "buy"; // if sell 1 jjcc with 1 swt, the value of type is "sell"
+        // const platform = 'jac1nNfVMMawUSqRiauvXm2jhPj1E4Gukk'; // swtc address for service charge
+        // const issuer = 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or'; // the default value is "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or"
         const address = this.address;
         const secret = this.secret;
-        // const amount = "1";
-        const base = market.baseId;
-        const counter = market.quoteId;
-        // const sum = '1';
-        // const type = "buy"; // if sell 1 jjcc with 1 swt, the value of type is "sell"
+        const amount = this.round (num, 15);
+        const base = market.baseId.toLowerCase ();
+        const counter = market.quoteId.toLowerCase ();
+        const sum = this.round (amount * price, 15);
+        const type = side.toLowerCase (); // if sell 1 jjcc with 1 swt, the value of type is "sell"
         const platform = 'jac1nNfVMMawUSqRiauvXm2jhPj1E4Gukk'; // swtc address for service charge
         const issuer = 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or'; // the default value is "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or"
         try {
-            const hash = await JCCExchange.createOrder (address, secret, amount + '', base, counter, amount * price, side + '', platform, issuer);
-            console.log (hash);
+            console.log ('start order');
+            console.log (amount + '-' + base + '-' + counter + '-' + sum + '-' + type);
+            const hash = await JCCExchange.createOrder (address, secret, amount, base, counter, sum, type, platform, issuer);
+            return hash;
         } catch (error) {
             console.log (error);
         }
+    }
+
+    round (v, e) {
+        const vList = v.toString ().split ('.');
+        e = e - vList[0].length;
+        let t = 1;
+        for (; e > 0; t *= 10, e--);
+        for (; e < 0; t /= 10, e++);
+        return (Math.round (v * t) / t).toString ();
     }
 
     async cancelOrder (id) {
@@ -508,5 +537,119 @@ module.exports = class weidex extends Exchange {
             });
         }
         return result;
+    }
+
+    async fetchOrder (hash) {
+        await this.loadMarkets ();
+        const response = await this.publicGetExchangeDetailHash ({ 'hash': hash });
+        const order = this.safeValue (response, 'data');
+        return this.parseOrderDetail (order);
+    }
+
+    parseOrderDetail (order) {
+        //
+        //     {                  id:  13997833014,
+        //                    symbol: "ethbtc",
+        //              'account-id':  3398321,
+        //                    amount: "0.045000000000000000",
+        //                     price: "0.034014000000000000",
+        //              'created-at':  1545836976871,
+        //                      type: "sell-limit",
+        //            'field-amount': "0.045000000000000000", // they have fixed it for filled-amount
+        //       'field-cash-amount': "0.001530630000000000", // they have fixed it for filled-cash-amount
+        //              'field-fees': "0.000003061260000000", // they have fixed it for filled-fees
+        //             'finished-at':  1545837948214,
+        //                    source: "spot-api",
+        //                     state: "filled",
+        //             'canceled-at':  0                      }
+        //
+        //     {                  id:  20395337822,
+        //                    symbol: "ethbtc",
+        //              'account-id':  5685075,
+        //                    amount: "0.001000000000000000",
+        //                     price: "0.0",
+        //              'created-at':  1545831584023,
+        //                      type: "buy-market",
+        //            'field-amount': "0.029100000000000000", // they have fixed it for filled-amount
+        //       'field-cash-amount': "0.000999788700000000", // they have fixed it for filled-cash-amount
+        //              'field-fees': "0.000058200000000000", // they have fixed it for filled-fees
+        //             'finished-at':  1545831584181,
+        //                    source: "spot-api",
+        //                     state: "filled",
+        //             'canceled-at':  0                      }
+        //
+        const id = this.safe_integer (order, 'Sequence');
+        // let side = undefined;
+        const type = 'default';
+        // let status = undefined;
+        // if ('type' in order) {
+        //     const orderType = order['type'].split ('-');
+        //     side = orderType[0];
+        //     type = orderType[1];
+        //     status = this.parseOrderStatus (this.safeString (order, 'state'));
+        // }
+        let symbol = undefined;
+        let side = undefined;
+        const timestamp = undefined;
+        let amount = 0;
+        let counterAmount = 0;
+        let price = 0;
+        const filled = 0;
+        const status = 'open';
+        if (order.flag === 1) {
+            symbol = this.getCurrency (order.TakerPays) + '/' + this.getCurrency (order.TakerGets);
+            amount = this.safeFloat (order.TakerPays, 'value');
+            counterAmount = this.safeFloat (order.TakerGets, 'value');
+            side = 'buy';
+        } else {
+            symbol = this.getCurrency (order.TakerGets) + '/' + this.getCurrency (order.TakerPays);
+            amount = this.safeFloat (order.TakerGets, 'value');
+            counterAmount = this.safeFloat (order.TakerPays, 'value');
+            side = 'sell';
+        }
+        price = counterAmount / amount;
+        if (price === 0.0) {
+            price = undefined;
+        }
+        const cost = undefined;
+        const remaining = amount;
+        const average = undefined;
+        // if (filled !== undefined) {
+        //     if (amount !== undefined) {
+        //         remaining = amount - filled;
+        //     }
+        //     // if cost is defined and filled is not zero
+        //     if ((cost !== undefined) && (filled > 0)) {
+        //         average = cost / filled;
+        //     }
+        // }
+        const feeCost = 0;
+        const fee = 0;
+        return {
+            'info': order,
+            'id': id,
+            'timestamp': timestamp,
+            'datetime': this.iso8601 (timestamp),
+            'lastTradeTimestamp': undefined,
+            'symbol': symbol,
+            'type': type,
+            'side': side,
+            'price': price,
+            'average': average,
+            'cost': cost,
+            'amount': amount,
+            'filled': filled,
+            'remaining': remaining,
+            'status': status,
+            'fee': fee,
+        };
+    }
+
+    getCurrency (obj) {
+        if (obj.currency) {
+            return obj.currency;
+        } else {
+            return 'SWT';
+        }
     }
 };
