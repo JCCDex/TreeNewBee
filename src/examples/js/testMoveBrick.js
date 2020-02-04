@@ -2,38 +2,39 @@
 
 const log = require('ololog').configure({ locate: false })
 const ccxt = require('../../ccxt')
+const Configs = require('./testconfig')
 
 const weidex = new ccxt['weidex']({
-    address: configs.jingtum1.address,
-    secret: configs.jingtum1.secret,
+    address: Configs.jingtum1.address,
+    secret: Configs.jingtum1.secret,
     enableRateLimit: true,
 })
 const huobipro = new ccxt['huobipro']({
-    "apiKey": configs.huobi.access_key,
-    "secret": configs.huobi.secretkey,
+    "apiKey": Configs.huobi.access_key,
+    "secret": Configs.huobi.secretkey,
     'verbose': false, // set to true to see more debugging output
     'timeout': 60000,
     'enableRateLimit': true
     , // add this
-    // 'urls': {
-    //     'api': {
-    //         'market': 'https://api.huobi.pro',
-    //         'public':  'https://api.huobi.pro',
-    //         'private':  'https://api.huobi.pro',
-    //         'zendesk': 'https://huobiglobal.zendesk.com/hc/en-us/articles',
-    //     }
-    // },
-    // 'hostname': 'api.huobi.pro', // ←---------------  ADD THIS
+    'urls': {
+        'api': {
+            'market': Configs.huobi.market,
+            'public': Configs.huobi.public,
+            'private': Configs.huobi.private,
+            'zendesk': Configs.huobi.zendesk,
+        }
+    },
+    'hostname': Configs.huobi.hostname,// ←---------------  ADD THIS
 })
 
 // const pairs = ["ETH/USDT", "HT/USDT", "XRP/USDT"]
-const pairs = ["XRP/USDT"]
+const pairs =  Configs.tradePairs
 async function test() {
-    const configs = await weidex.fetch("https://jccdex.cn/static/config/jc_config.json")
+    const configs = await weidex.fetch(Configs.weidexConfig.jc_config)
     console.log(configs);
     weidex.configs = configs
 
-    const coinpairConfigs = await weidex.fetch("https://jccdex.cn/static/config/coins_pairs_config.json")
+    const coinpairConfigs = await weidex.fetch(Configs.weidexConfig.coins_pairs_config)
     console.log(coinpairConfigs);
     weidex.coinpairConfigs = coinpairConfigs
 

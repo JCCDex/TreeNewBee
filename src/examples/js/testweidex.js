@@ -2,20 +2,20 @@
 
 const log = require('ololog').configure({ locate: false })
 const ccxt = require('../../ccxt')
-
+const Configs = require('./testconfig')
 const weidex = new ccxt['weidex']({
-  address: configs.jingtum1.address,
-  secret: configs.jingtum1.secret,
+  address: Configs.jingtum1.address,
+  secret: Configs.jingtum1.secret,
   enableRateLimit: true,
 })
 
 
 async function test() {
-  const configs = await weidex.fetch("https://jccdex.cn/static/config/jc_config.json")
+  const configs = await weidex.fetch(Configs.weidexConfig.jc_config)
   console.log(configs);
   weidex.configs = configs
 
-  const coinpairConfigs = await weidex.fetch("https://jccdex.cn/static/config/coins_pairs_config.json")
+  const coinpairConfigs = await weidex.fetch(Configs.weidexConfig.coins_pairs_config)
   console.log(coinpairConfigs);
   weidex.coinpairConfigs = coinpairConfigs
   //     const localStartTime = Date.now ()

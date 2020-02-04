@@ -1,39 +1,29 @@
 const log = require('ololog').configure({ locate: false })
-const configs = require('./testconfig')
+const Configs = require('./testconfig')
 const ccxt = require('../../ccxt')
 
 const weidex = new ccxt['weidex']({
-    address: configs.jingtum2.address,
-    secret: configs.jingtum2.secret,
+    address: Configs.jingtum2.address,
+    secret: Configs.jingtum2.secret,
     enableRateLimit: true,
 })
 const okex3 = new ccxt['okex3']({
-    "apiKey": configs.okex.access_key,
-    "secret": configs.okex.secretkey,
+    "apiKey": Configs.okex.access_key,
+    "secret": Configs.okex.secretkey,
     'verbose': false, // set to true to see more debugging output
     'timeout': 60000,
     'enableRateLimit': true,
-    'password': configs.okex.privatekey,
-    // add this
-    //  'urls': {
-    //      'api': {
-    //         'market': 'https://api.huobi.io',
-    //          'public':  'https://api.huobi.io',
-    //          'private':  'https://api.huobi.io',
-    //          'zendesk': 'https://huobiglobal.zendesk.com/hc/en-us/articles',
-    //      }
-    //  },
-    //  'hostname': 'api.huobi.io', // ←---------------  ADD THIS
+    'password': Configs.okex.privatekey
 })
 
 
 // huobis orders move to weidex
 const run = async function () {
-    const configs = await weidex.fetch("https://jccdex.cn/static/config/jc_config.json")
+    const configs = await weidex.fetch(Configs.weidexConfig.jc_config)
     console.log(configs);
     weidex.configs = configs
 
-    const coinpairConfigs = await weidex.fetch("https://jccdex.cn/static/config/coins_pairs_config.json")
+    const coinpairConfigs = await weidex.fetch(Configs.weidexConfig.coins_pairs_config)
     console.log(coinpairConfigs);
     weidex.coinpairConfigs = coinpairConfigs
     let marketWeidex = await weidex.fetchMarkets()
@@ -44,7 +34,7 @@ const run = async function () {
     // let usdt_price_scale = 0.971791255
     const usdt_price_scale = 1
     //删除所有订单
-    let pairs = ["XRP/USDT"]
+    let pairs = Configs.tradePairs
     pairs.forEach(pair => {
         okex3.fetchOpenOrders(pair).then(orders => {
             if (orders.length > 0) {
