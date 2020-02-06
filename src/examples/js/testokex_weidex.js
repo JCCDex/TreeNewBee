@@ -154,3 +154,6 @@ function init() {
     }, 60000);
 }
 init()
+module.exports = {
+    init
+  };

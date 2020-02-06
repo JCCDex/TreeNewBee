@@ -29,7 +29,7 @@ const huobipro = new ccxt['huobipro']({
 
 // const pairs = ["ETH/USDT", "HT/USDT", "XRP/USDT"]
 const pairs =  Configs.tradePairs
-async function test() {
+async function init() {
     const configs = await weidex.fetch(Configs.weidexConfig.jc_config)
     console.log(configs);
     weidex.configs = configs
@@ -120,4 +120,7 @@ function min(arr) {
 function _isNaN(v) {
     return !(typeof v === 'string' || typeof v === 'number') || isNaN(v)
 }
-test();
+init();
+module.exports = {
+    init
+  };
