@@ -13,6 +13,8 @@
 
         2)映射okex订单到威链：填写  "okex"的{"access_key": "","secretkey": "","privatekey": ""}信息，"jingtum2"的{"address": "","secret": ""}
 
-3、cd src/examples/js/,执行node testhuobi_weidex.js,node testokex_weidex.js,通过映射两个交易所的订单，使威链上的两个地址之间进行交易刷单
+3、cd src/examples/js/,node start -H -O -M,启动映射两个交易所的订单，使威链上的两个地址之间进行交易刷单，以及执行node testMoveBrick.js,自动在多个交易所
 
-4、cd src/examples/js/,执行node testMoveBrick.js,自动在多个交易所之间寻找最优价差并挂单
+之间寻找最优价差并挂单
+
+

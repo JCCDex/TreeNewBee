@@ -27,7 +27,6 @@ const huobipro = new ccxt['huobipro']({
     'hostname': Configs.huobi.hostname,// ←---------------  ADD THIS
 })
 
-// const pairs = ["ETH/USDT", "HT/USDT", "XRP/USDT"]
 const pairs =  Configs.tradePairs
 async function init() {
     const configs = await weidex.fetch(Configs.weidexConfig.jc_config)
