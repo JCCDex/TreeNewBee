@@ -140,9 +140,9 @@ function watchOrders(exs) {
                                         });
                                     }
                                 });
-                                exs.exPair[1].createOrder(element.symbol, "sell", element.amount, element.price)
+                                exs.exPair[1].createOrder(element.symbol,"limit", "sell", element.amount, element.price)
                             } else if (element.side === "sell") {
-                                exs.exPair[1].createOrder(element.symbol, "buy", element.amount, element.price)
+                                exs.exPair[1].createOrder(element.symbol,"limit", "buy", element.amount, element.price)
                                 exs.exPair[0].fetchOrderBook(element.symbol).then(prices => {
                                     if (prices && prices.bids[stepIndex][0] < this.current_deal_price) {
                                         exs.exPair[0].createOrder(element.symbol, "limit", "buy", number, prices.bids[stepIndex][0]).then(res => {
