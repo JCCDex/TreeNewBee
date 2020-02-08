@@ -13,8 +13,8 @@
 
         2)映射okex订单到威链：填写  "okex"的{"access_key": "","secretkey": "","privatekey": ""}信息，"jingtum2"的{"address": "","secret": ""}
 
-3、cd src/examples/js/,node start  -O -M,启动映射两个交易所的订单，使威链上的两个地址之间进行交易刷单，以及自动在多个交易所
+3、cd src/examples/js/,node start  -O -M,启动映射两个交易所的订单，使威链上的两个地址之间进行交易刷单，以及自动在多个交易所之间寻找最优价差并挂单,访问ok交易
 
-之间寻找最优价差并挂单,访问ok交易所需要梯子。
+所需要梯子。
 
 
