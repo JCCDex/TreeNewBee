@@ -30,11 +30,9 @@ const huobipro = new ccxt['huobipro']({
 const pairs =  Configs.tradePairs
 async function init() {
     const configs = await weidex.fetch(Configs.weidexConfig.jc_config)
-    console.log(configs);
     weidex.configs = configs
 
     const coinpairConfigs = await weidex.fetch(Configs.weidexConfig.coins_pairs_config)
-    console.log(coinpairConfigs);
     weidex.coinpairConfigs = coinpairConfigs
 
     pairs.forEach(async pair => {
@@ -43,13 +41,6 @@ async function init() {
         let ordersWeidex = await weidex.fetchOrderBook(pair)
         let ordersHuobipro = await huobipro.fetchOrderBook(pair)
         let data = [{ "key": "weidex", "exchange": weidex, "value": ordersWeidex }, { "key": "huobipro", "exchange": huobipro, "value": ordersHuobipro }]
-        // let bids = [],
-        //     asks = [];
-        //     data.forEach(element => {
-        //         bids.push(element['bids'][0])
-        //         asks.push(element['asks'][0])
-        //     });
-        //     log('huobi买'+element+'，weidex卖'+element+'的盈利情况',((asks[0][0]-bids[1][0]))/asks[0][0]*100, '%')
         // 低买高卖，获取指定交易对的潜在套利最大化的2个交易所，理论上先去ask1卖一最低（卖的最便宜的bid1）的买入，立刻去bid1买一最高（买起来最贵的bid1）卖出
         //最贵的买一 初始化为一个较小值
         let max_bid1 = 0
@@ -95,7 +86,7 @@ async function init() {
                 console.log('oooooooo unlucky symbol {' + pair + '},no pair to make money')
             } else {
                 let bidExchange = data.filter(o => o.key == bid_exchange)[0]
-                await bidExchange.exchange.createOrder(pair, "sell", bid_amount, max_bid1)
+                await bidExchange.exchange.createOrder(pair, "limit","sell", bid_amount, max_bid1)
                 let askExchange = data.filter(o => o.key == ask_exchange)[0]
                 await askExchange.exchange.createOrder(pair, "limit", "buy", ask_amount, min_ask1)
                 console.log("create order successful")
@@ -106,11 +97,6 @@ async function init() {
             print('\n\n******------ symbol {' + pair + '} not find good exchange')
         }
     });
-    // log(await weidex.fetchMarkets("ETH-USDT", "normal"))
-
-    // log(await weidex.fetchBalance())
-    // log(await weidex.fetchOrders())
-
 }
 function min(arr) {
     arr = arr.filter(item => !_isNaN(item))
