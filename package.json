@@ -1,13 +1,11 @@
 {
-  "name": "comm",
+  "name": "treenewbee",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "commander": "^2.9.0"
-  },
-  "bin": {
-    "poet": "app.js"
+    "commander": "^2.9.0",
+    "jcc_exchange": "^3.0.3"
   },
   "devDependencies": {},
   "scripts": {

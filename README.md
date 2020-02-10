@@ -9,12 +9,14 @@
 
 2、配置文件:src/examples/js/testconfig.js
 
-        1)映射火币订单到威链：填写  "huobi"的{"access_key": "","secretkey": ""}信息，"jingtum1"的{"address": "","secret": ""}
+         1)    "exchanges":[["huobi","weidex"]],数组里面配置要映射的交易所映射火币订单到威链：填写  "huobi"的{"access_key": "","secretkey": ""}信
+         
+         息，"jingtum1"的{"address": "","secret": ""}
 
-        2)映射okex订单到威链：填写  "okex"的{"access_key": "","secretkey": "","privatekey": ""}信息，"jingtum2"的{"address": "","secret": ""}
+        2)   "exchanges":[["okex","weidex"]],映射okex订单到威链：填写  "okex"的{"access_key": "","secretkey": "","privatekey": ""}信息，
+        
+        "jingtum1"的{"address": "","secret": ""}
 
-3、cd src/examples/js/,node start  -O -M,启动映射两个交易所的订单，使威链上的两个地址之间进行交易刷单，以及自动在多个交易所之间寻找最优价差并挂单,访问ok交易
-
-所需要梯子。
+3、cd src/examples/js/,node start  -O -M,启动交易对映射，以及自动在多个交易所之间寻找最优价差并挂单,访问ok交易所需要梯子。
 
 

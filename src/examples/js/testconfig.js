@@ -1,6 +1,7 @@
 'use strict';
 
 const configs = {
+    "exchanges":[["huobi","weidex"]],
     "huobi": {
         "access_key": "",
         "secretkey": "",
@@ -15,13 +16,9 @@ const configs = {
         "secretkey": "",
         "privatekey": ""
     },
-    "binance": {
-        "access_key": "",
-        "secretkey": ""
-    },
     "weidexConfig": {
-        "jc_config": "https://jccdex.cn/static/config/jc_config.json",
-        "coins_pairs_config": "https://jccdex.cn/static/config/coins_pairs_config.json"
+        "jc_config": "https://weidex.vip/static/config/jc_config.json",
+        "coins_pairs_config": "https://weidex.vip/static/config/coins_pairs_config.json"
     },
     "jingtum1": {
         "address": "",

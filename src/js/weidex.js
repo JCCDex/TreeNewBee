@@ -32,7 +32,7 @@ module.exports = class weidex extends Exchange {
                 'fetchTickers': false,
                 'fetchDepositAddress': false,
                 'fetchOHLCV': false,
-                'fetchOrder': true,
+                'fetchOrder': false,
                 'fetchOrders': true,
                 'fetchOpenOrders': true,
                 'fetchClosedOrders': false,
@@ -317,12 +317,13 @@ module.exports = class weidex extends Exchange {
         const counter = market.quoteId.toLowerCase ();
         const sum = this.round (amount * price, 15);
         const type = side.toLowerCase (); // if sell 1 jjcc with 1 swt, the value of type is "sell"
-        const platform = 'jac1nNfVMMawUSqRiauvXm2jhPj1E4Gukk'; // swtc address for service charge
+        const platform = ''; // swtc address for service charge
         const issuer = 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or'; // the default value is "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or"
         try {
             console.log ('start order');
             console.log (amount + '-' + base + '-' + counter + '-' + sum + '-' + type);
             const hash = await JCCExchange.createOrder (address, secret, amount, base, counter, sum, type, platform, issuer);
+            console.log ('hash:' + hash);
             return hash;
         } catch (error) {
             console.log (error);
