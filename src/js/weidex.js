@@ -293,6 +293,7 @@ module.exports = class weidex extends Exchange {
         await this.loadMarkets ();
         const market = this.market (symbol);
         const hosts = this.configs.exHosts;
+        // const hosts = ['srje071qdew231.jccdex.cn', 'srje115qd43qw2.jccdex.cn'];
         console.log (hosts);
         const port = 443;
         const https = true;

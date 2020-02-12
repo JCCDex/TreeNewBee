@@ -3,44 +3,19 @@
 const log = require('ololog').configure({ locate: false })
 const ccxt = require('../../ccxt')
 const Configs = require('./testconfig')
+const util=require('./utils')
 
-const weidex = new ccxt['weidex']({
-    address: Configs.jingtum1.address,
-    secret: Configs.jingtum1.secret,
-    enableRateLimit: true,
-})
-const huobipro = new ccxt['huobipro']({
-    "apiKey": Configs.huobi.access_key,
-    "secret": Configs.huobi.secretkey,
-    'verbose': false, // set to true to see more debugging output
-    'timeout': 60000,
-    'enableRateLimit': true
-    , // add this
-    'urls': {
-        'api': {
-            'market': Configs.huobi.market,
-            'public': Configs.huobi.public,
-            'private': Configs.huobi.private,
-            'zendesk': Configs.huobi.zendesk,
-        }
-    },
-    'hostname': Configs.huobi.hostname,// ←---------------  ADD THIS
-})
 
 const pairs =  Configs.tradePairs
 async function init() {
-    const configs = await weidex.fetch(Configs.weidexConfig.jc_config)
-    weidex.configs = configs
-
-    const coinpairConfigs = await weidex.fetch(Configs.weidexConfig.coins_pairs_config)
-    weidex.coinpairConfigs = coinpairConfigs
-
     pairs.forEach(async pair => {
-        let marketWeidex = await weidex.fetchMarkets()
-        let marketHuobipro = await huobipro.fetchMarkets()
-        let ordersWeidex = await weidex.fetchOrderBook(pair)
-        let ordersHuobipro = await huobipro.fetchOrderBook(pair)
-        let data = [{ "key": "weidex", "exchange": weidex, "value": ordersWeidex }, { "key": "huobipro", "exchange": huobipro, "value": ordersHuobipro }]
+        let data = []
+        Configs.moveBrickExchanges.forEach(e=>{
+            let orders = await util.utils.getExchange(e)
+            let ordersInfo={ "key":e, "exchange": e, "value": orders }
+            data.push(ordersInfo)
+        })
+        // let data = [{ "key": "weidex", "exchange": weidex, "value": ordersWeidex }, { "key": "huobipro", "exchange": huobipro, "value": ordersHuobipro }]
         // 低买高卖，获取指定交易对的潜在套利最大化的2个交易所，理论上先去ask1卖一最低（卖的最便宜的bid1）的买入，立刻去bid1买一最高（买起来最贵的bid1）卖出
         //最贵的买一 初始化为一个较小值
         let max_bid1 = 0
@@ -72,7 +47,7 @@ async function init() {
                 console.log('get new min_ask1 is' + min_ask1 + ',exchange is ' + ask_exchange + ',tradingPair is  ' + pair)
             }
         });
-        if (bid_exchange && ask_exchange) {
+        if (bid_exchange && ask_exchange&&bid_exchange!=ask_exchange) {
             let price_diff = max_bid1 - min_ask1
             let percent = price_diff / min_ask1 * 100
             let trade_volume = min([ask_amount, bid_amount])

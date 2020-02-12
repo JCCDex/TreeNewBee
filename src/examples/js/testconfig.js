@@ -2,6 +2,7 @@
 
 const configs = {
     "exchanges":[["huobi","weidex"]],
+    "moveBrickExchanges":["huobi","weidex"],
     "huobi": {
         "access_key": "",
         "secretkey": "",
