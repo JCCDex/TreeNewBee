@@ -15,7 +15,6 @@ async function init() {
             let ordersInfo={ "key":e, "exchange": e, "value": orders }
             data.push(ordersInfo)
         })
-        // let data = [{ "key": "weidex", "exchange": weidex, "value": ordersWeidex }, { "key": "huobipro", "exchange": huobipro, "value": ordersHuobipro }]
         // 低买高卖，获取指定交易对的潜在套利最大化的2个交易所，理论上先去ask1卖一最低（卖的最便宜的bid1）的买入，立刻去bid1买一最高（买起来最贵的bid1）卖出
         //最贵的买一 初始化为一个较小值
         let max_bid1 = 0

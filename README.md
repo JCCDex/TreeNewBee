@@ -16,6 +16,8 @@
         2)   "exchanges":[["okex","weidex"]],映射okex订单到威链：填写  "okex"的{"access_key": "","secretkey": "","privatekey": ""}信息，
         
         "jingtum1"的{"address": "","secret": ""}
+        
+        3) "moveBrickExchanges"的值:["huobi","weidex"],在火币和威链之间寻找差价并搬砖
 
 3、cd src/examples/js/,node start  -O -M,启动交易对映射，以及自动在多个交易所之间寻找最优价差并挂单,访问ok交易所需要梯子。
 
