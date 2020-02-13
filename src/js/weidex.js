@@ -340,7 +340,7 @@ module.exports = class weidex extends Exchange {
         return (Math.round (v * t) / t).toString ();
     }
 
-    async cancelOrder (id) {
+    async cancelOrder (id, symbol = undefined) {
         const hosts = this.configs.exHosts;
         const port = 443;
         const https = true;
@@ -458,7 +458,7 @@ module.exports = class weidex extends Exchange {
         return response;
     }
 
-    async fetchOrderBook (symbol, limit = 'normal') {
+    async fetchOrderBook (symbol, limit = 'more') {
         await this.loadMarkets ();
         const market = this.market (symbol);
         const response = await this.publicGetInfoDepthCurrencyType ({ 'currency': market.id, 'type': limit });

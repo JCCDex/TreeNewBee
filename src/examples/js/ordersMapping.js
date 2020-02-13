@@ -33,7 +33,7 @@ function clearAllExchangeOrders(exchanges) {
 //删除所有订单
 function clearOrders(ex,pair) {
     ex.fetchOpenOrders(pair).then(orders => {
-        if (orders.length > 0) {
+        if (orders&&orders.length > 0) {
             orders.forEach(element => {
                 ex.cancelOrder(element.id).then(data => {
                     console.log(data)
