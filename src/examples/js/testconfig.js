@@ -3,6 +3,7 @@
 const configs = {
     "exchanges":[["huobi","weidex"]],
     "moveBrickExchanges":["huobi","weidex"],
+    "profit":0.01,//搬砖利润率
     "huobi": {
         "access_key": "",
         "secretkey": "",

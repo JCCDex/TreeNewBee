@@ -1,11 +1,8 @@
-const log = require('ololog').configure({ locate: false })
-const ccxt = require('../../ccxt')
 const Configs = require('./testconfig')
 const util=require('./utils')
-var number = 0;
-const stepIndex = 1//深度排序
+var number = 0;//挂单数量
+const stepIndex = 1//委托档位排序
 let pairs = Configs.tradePairs
-// mapping orders
 const run = async function () {
     number = Math.floor(Math.random() * 10 + 20);//数量
     Configs.exchanges.forEach(async o=>{
@@ -21,12 +18,9 @@ const run = async function () {
 }
 //清理所有交易所订单
 function clearAllExchangeOrders(exchanges) {
-
     pairs.forEach(pair => {
         exchanges.forEach(ex => {
-           
                 clearOrders(ex,pair)
-            
         })
     });
 }
@@ -35,20 +29,13 @@ function clearOrders(ex,pair) {
     ex.fetchOpenOrders(pair).then(orders => {
         if (orders&&orders.length > 0) {
             orders.forEach(element => {
-                ex.cancelOrder(element.id).then(data => {
+                ex.cancelOrder(element.id,pair).then(data => {
                     console.log(data)
                 })
             });
         }
     });
 }
-
-//初始化订单
-// function initOrders(exchanges,pair) {
-//     exchanges.exPair.forEach(exs => {
-//         initOrder(exs,pair)
-//     })
-// }
 
 //根据资金情况判断是买还是卖
 function initOrders(exs,pair) {
@@ -73,7 +60,6 @@ function initOrders(exs,pair) {
                     });
                 }
             }
-
         });
     });
 }
@@ -105,7 +91,6 @@ function orderOpposite(element, exs) {
                     this.current_deal_price = prices.asks[stepIndex][0]
                     exs.orders.push(res)
                 });
-
             }
         });
         exs.exPair[1].createOrder(element.symbol, "limit", "sell", element.amount, element.price)
@@ -117,12 +102,10 @@ function orderOpposite(element, exs) {
                     this.current_deal_price = prices.bids[stepIndex][0]
                     exs.orders.push(res)
                 });
-                
             }
         });
         exs.exPair[1].createOrder(element.symbol, "limit", "buy", element.amount, element.price)
     }
-
     let list = exs.orders.filter(o => o.id != element.id)
     exs.orders = list
 }

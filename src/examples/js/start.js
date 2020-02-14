@@ -7,7 +7,7 @@ program.version("0.0.1");
 program.usage("--help", "Show TreeNewBee help");
 let _description = "TreeNewBee command line tools";
 program.description(_description);
-program.option("-O,--ordersMapping", "mapping orders from huobi to weidex");
+program.option("-O,--ordersMapping", "mapping orders from exchange to weidex");
 program.option("-M,--moveBrick", "select orders from exchange which has a best price,and place an order");
 program.parse(process.argv);
 if (!program.ordersMapping) {

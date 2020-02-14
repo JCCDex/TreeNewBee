@@ -1,12 +1,8 @@
 'use strict';
-
-const log = require('ololog').configure({ locate: false })
-const ccxt = require('../../ccxt')
 const Configs = require('./testconfig')
 const util=require('./utils')
-
-
 const pairs =  Configs.tradePairs
+const profit=Configs.profit
 async function init() {
     pairs.forEach(async pair => {
         let data = []
@@ -39,7 +35,6 @@ async function init() {
                 bid_amount = bid1_amount
                 console.log('get new max_bid1 is ' + max_bid1 + ',exchange is ' + bid_exchange + ',tradingPair is' + pair)
             }
-
             //找到最便宜的卖一，进行买操作
             if (ask1 && (ask1 < min_ask1)) {
                 min_ask1 = ask1
@@ -54,11 +49,7 @@ async function init() {
             let trade_volume = min([ask_amount, bid_amount])
             let profits = min_ask1 * trade_volume * percent / 100
             console.log('\n\n++++++++ symbol ' + pair + ' find good exchange,\n percent {' + percent + '}%,price_diff {' + price_diff + '},trade_volume {' + trade_volume + '},profits {' + profits + '},' + '\nbuy at {' + min_ask1 + '},{' + ask_amount + '},{' + min_ask1 * ask_amount + '0},{' + ask_exchange + '},\nsell at {' + max_bid1 + '},{' + bid_amount + '},{' + max_bid1 * bid_amount + '},{' + bid_exchange + '}')
-
-
-
-
-            if (price_diff < 0) {
+            if (price_diff < profit) {
                 console.log('oooooooo unlucky symbol {' + pair + '},no pair to make money')
             } else {
                 let bidExchange = data.filter(o => o.key == bid_exchange)[0]
@@ -68,7 +59,6 @@ async function init() {
                 console.log("create order successful")
             }
         }
-
         else {
             console.log('\n\n******------ symbol {' + pair + '} not find good exchange')
         }
