@@ -35,7 +35,7 @@ function placeOrders(ex0, ex1, pair) {
             let balance_base = balance[base];
             let balance_counter = balance[counter];
             if (prices && balance && balance_base.free > 0 && balance_counter.free > 0) {
-                if (balance_base.free * prices.bids[stepIndex][0] < balance_counter.free) {
+                if (balance_base.free * prices.bids[0][0] < balance_counter.free) {
                     createOrders(ex1, pair, "buy", prices.bids.slice(0,10) )
                 } else {
                     createOrders(ex1, pair, "sell", prices.asks.slice(0,10) )
