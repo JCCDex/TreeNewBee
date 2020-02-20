@@ -56,7 +56,8 @@ function createOrders(ex, pair, side, orders) {
 function sleep(numberMillis) {
   var now = new Date();
   var exitTime = now.getTime() + numberMillis;
-  while (true) {
+  const loop = true;
+  while (loop) {
     now = new Date();
     if (now.getTime() > exitTime) return;
   }

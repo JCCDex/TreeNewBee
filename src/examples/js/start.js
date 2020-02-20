@@ -1,5 +1,5 @@
 const program = require("commander");
-const fs = require("fs");
+const process = require("process");
 const ordersMapping = require("./ordersMapping");
 const moveBrick = require("./testMoveBrick");
 const newOrdersMapping = require("./newOrderMapping");
