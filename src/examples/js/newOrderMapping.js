@@ -14,14 +14,13 @@ const run = async function () {
 
 //删除所有订单
 function clearOrders(ex, pair) {
-    ex.fetchOpenOrders(pair).then(orders => {
+    ex.fetchOpenOrders(pair).then(async orders => {
         if (orders && orders.length > 0) {
-            orders.forEach(element => {
-                ex.cancelOrder(element.id, pair).then(data => {
-                    console.log(data)
-                })
-                sleep(3000)
-            });
+            for (let index = 0; index < orders.length; index++) {
+                const order = orders[index];
+                let res = await ex.cancelOrder(order.id, pair)
+                console.log(res)
+            }
         }
     });
 }
@@ -36,32 +35,24 @@ function placeOrders(ex0, ex1, pair) {
             let balance_counter = balance[counter];
             if (prices && balance && balance_base.free > 0 && balance_counter.free > 0) {
                 if (balance_base.free * prices.bids[0][0] < balance_counter.free) {
-                    createOrders(ex1, pair, "buy", prices.bids.slice(0,10) )
+                    createOrders(ex1, pair, "buy", prices.bids.slice(0, 10))
                 } else {
-                    createOrders(ex1, pair, "sell", prices.asks.slice(0,10) )
+                    createOrders(ex1, pair, "sell", prices.asks.slice(0, 10))
                 }
             }
         });
     });
 }
 
-function createOrders(ex, pair, side, orders) {
-    orders.forEach(order => {
+async function createOrders(ex, pair, side, orders) {
+    for (let index = 0; index < orders.length; index++) {
+        const order = orders[index];
         let number = Math.floor(Math.random() * 10);//数量
-        ex.createOrder(pair, "limit", side, number, order[0])
-        sleep(3000)
-    });
+        let res = await ex.createOrder(pair, "limit", side, number, order[0])
+        console.log(res)
+    }
 }
 
-function sleep(numberMillis) { 
-    var now = new Date(); 
-    var exitTime = now.getTime() + numberMillis; 
-    while (true) { 
-    now = new Date(); 
-    if (now.getTime() > exitTime) 
-    return; 
-    } 
-    }
 run();
 function init() {
     setInterval(() => {
