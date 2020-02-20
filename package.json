@@ -7,7 +7,16 @@
     "commander": "^2.9.0",
     "jcc_exchange": "^2.0.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "husky": "^4.2.3",
+    "prettier": "^1.19.1",
+    "pretty-quick": "^2.0.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
