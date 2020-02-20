@@ -3,6 +3,7 @@
 //  ---------------------------------------------------------------------------
 
 const Exchange = require("./base/Exchange");
+const BigNumber = require("bignumber.js");
 const { AuthenticationError, ExchangeError, ExchangeNotAvailable, InvalidOrder, OrderNotFound, InsufficientFunds, ArgumentsRequired, BadSymbol, BadRequest, RequestTimeout } = require("./base/errors");
 
 //  ---------------------------------------------------------------------------
@@ -892,6 +893,8 @@ module.exports = class huobipro extends Exchange {
       symbol: market["id"],
       type: side + "-" + type
     };
+    const costMin = market.limits.cost.min;
+
     if (type === "market" && side === "buy") {
       if (this.options["createMarketBuyOrderRequiresPrice"]) {
         if (price === undefined) {
@@ -902,6 +905,9 @@ module.exports = class huobipro extends Exchange {
           // more about it here: https://github.com/ccxt/ccxt/pull/4395
           // we use priceToPrecision instead of amountToPrecision here
           // because in this case the amount is in the quote currency
+          if (new BigNumber(amount).lt(costMin)) {
+            throw new InvalidOrder(this.id + " amount must be greater than cost min if type is market-buy.");
+          }
           request["amount"] = this.costToPrecision(symbol, parseFloat(amount) * parseFloat(price));
         }
       } else {
@@ -913,6 +919,13 @@ module.exports = class huobipro extends Exchange {
     if (type === "limit" || type === "ioc" || type === "limit-maker") {
       request["price"] = this.priceToPrecision(symbol, price);
     }
+
+    if (type === "limit") {
+      if (new BigNumber(request["amount"]).multipliedBy(request["price"]).lt(costMin)) {
+        throw new InvalidOrder(this.id + " amount*price must be greater than cost min if type is limit.");
+      }
+    }
+
     const method = this.options["createOrderMethod"];
     const response = await this[method](this.extend(request, params));
     const timestamp = this.milliseconds();
