@@ -852,7 +852,7 @@ module.exports = class bittrex extends Exchange {
         if (feeCost === undefined) {
             if (type === 'deposit') {
                 // according to https://support.bittrex.com/hc/en-us/articles/115000199651-What-fees-does-Bittrex-charge-
-                feeCost = 0; // FIXME: remove hardcoded value that may change any time
+                feeCost = 0;
             }
         }
         return {

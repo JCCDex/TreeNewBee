@@ -1392,7 +1392,7 @@ module.exports = class poloniex extends Exchange {
         let feeCost = this.safeFloat (transaction, 'fee');
         if (feeCost === undefined) {
             // according to https://poloniex.com/fees/
-            feeCost = 0; // FIXME: remove hardcoded value that may change any time
+            feeCost = 0;
         }
         if (type === 'withdrawal') {
             // poloniex withdrawal amount includes the fee
