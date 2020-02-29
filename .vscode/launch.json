@@ -12,7 +12,8 @@
                 "<node_internals>/**"
             ],
             // "program": "${workspaceFolder}/src/examples/js/testMoveBrick.js"
-            "program": "${workspaceFolder}/src/examples/js/newOrderMapping.js"
+            // "program": "${workspaceFolder}/src/examples/js/newOrderMapping.js"
+            "program": "${workspaceFolder}/src/examples/js/threecorner.js"
         }
     ]
 }

@@ -18,4 +18,6 @@
 
     3) "moveBrickExchanges"的值:["huobi","weidex"],在火币和威链之间寻找差价并搬砖
 
-3、cd src/examples/js/,node start -O -N -M,启动交易对映射，以及自动在多个交易所之间寻找最优价差并挂单,访问 ok 交易所需要梯子。
+3、cd src/examples/js/,node start -O -N -M -T,启动交易对映射，以及自动在多个交易所之间寻找最优价差并挂单,以及启动三角套利机会检测。访问 
+
+ok 交易所需要梯子。
