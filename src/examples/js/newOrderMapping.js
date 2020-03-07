@@ -14,44 +14,43 @@ const run = async function() {
 
 //删除所有订单
 function clearOrders(ex, pair) {
-    ex.fetchOpenOrders(pair).then(async orders => {
-        if (orders && orders.length > 0) {
-            for (let index = 0; index < orders.length; index++) {
-                const order = orders[index];
-                let res = await ex.cancelOrder(order.id, pair)
-                console.log(res)
-            }
-        }
-    });
+  ex.fetchOpenOrders(pair).then(async (orders) => {
+    if (orders && orders.length > 0) {
+      for (let index = 0; index < orders.length; index++) {
+        const order = orders[index];
+        let res = await ex.cancelOrder(order.id, pair);
+        console.log(res);
+      }
+    }
+  });
 }
 
 //获取映射交易所市场挂单
 function placeOrders(ex0, ex1, pair) {
-    ex0.fetchOrderBook(pair).then(prices => {
-        ex1.fetchBalance().then(balance => {
-            let base = pair.split("/")[0]
-            let counter = pair.split("/")[1]
-            let balance_base = balance[base];
-            let balance_counter = balance[counter];
-            if (prices && balance && balance_base.free > 0 && balance_counter.free > 0) {
-                if (balance_base.free * prices.bids[0][0] < balance_counter.free) {
-                    createOrders(ex1, pair, "buy", prices.bids.slice(0, 10))
-                } else {
-                    createOrders(ex1, pair, "sell", prices.asks.slice(0, 10))
-                }
-            }
-        });
+  ex0.fetchOrderBook(pair).then((prices) => {
+    ex1.fetchBalance().then((balance) => {
+      let base = pair.split("/")[0];
+      let counter = pair.split("/")[1];
+      let balance_base = balance[base];
+      let balance_counter = balance[counter];
+      if (prices && balance && balance_base.free > 0 && balance_counter.free > 0) {
+        if (balance_base.free * prices.bids[0][0] < balance_counter.free) {
+          createOrders(ex1, pair, "buy", prices.bids.slice(0, 10));
+        } else {
+          createOrders(ex1, pair, "sell", prices.asks.slice(0, 10));
+        }
+      }
     });
   });
 }
 
 async function createOrders(ex, pair, side, orders) {
-    for (let index = 0; index < orders.length; index++) {
-        const order = orders[index];
-        let number = Math.floor(Math.random() * 10);//数量
-        let res = await ex.createOrder(pair, "limit", side, number, order[0])
-        console.log(res)
-    }
+  for (let index = 0; index < orders.length; index++) {
+    const order = orders[index];
+    let number = Math.floor(Math.random() * 10); //数量
+    let res = await ex.createOrder(pair, "limit", side, number, order[0]);
+    console.log(res);
+  }
 }
 
 run();
