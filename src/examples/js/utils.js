@@ -10,8 +10,8 @@ const utils = {
           return this.currentExchange;
         } else {
           this.currentExchange = new ccxt["weidex"]({
-            address: Configs.jingtum1.address,
-            secret: Configs.jingtum1.secret,
+            address: Configs.jingtumHuobi.address,
+            secret: Configs.jingtumHuobi.secret,
             enableRateLimit: true
           });
           const configs = await this.currentExchange.fetch(Configs.weidexConfig.jc_config);

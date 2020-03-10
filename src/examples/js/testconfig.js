@@ -22,11 +22,11 @@ const configs = {
     jc_config: "https://weidex.vip/static/config/jc_config.json",
     coins_pairs_config: "https://weidex.vip/static/config/coins_pairs_config.json"
   },
-  jingtum1: {
+  jingtumHuobi: {
     address: "",
     secret: ""
   },
-  jingtum2: {
+  jingtumOkex: {
     address: "",
     secret: ""
   },
