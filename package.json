@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "@types/node": "^13.9.0",
     "commander": "^2.9.0",
     "jcc_exchange": "^3.1.0"
   },
