@@ -1,4 +1,4 @@
-const Configs = require("./testconfig");
+const Configs = require("./config");
 const util = require("./utils");
 var number = 0; //挂单数量
 const stepIndex = 1; //委托档位排序

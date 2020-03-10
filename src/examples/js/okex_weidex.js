@@ -1,5 +1,5 @@
 const log = require("ololog").configure({ locate: false });
-const Configs = require("./testconfig");
+const Configs = require("./config");
 const ccxt = require("../../ccxt");
 
 const weidex = new ccxt["weidex"]({

@@ -1,6 +1,6 @@
 const log = require("ololog").configure({ locate: false });
 const ccxt = require("../../ccxt");
-const Configs = require("./testconfig");
+const Configs = require("./config");
 const weidex = new ccxt["weidex"]({
   address: Configs.jingtumHuobi.address,
   secret: Configs.jingtumHuobi.secret,

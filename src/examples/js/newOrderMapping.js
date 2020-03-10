@@ -1,4 +1,4 @@
-const Configs = require("./testconfig");
+const Configs = require("./config");
 const util = require("./utils");
 let pairs = Configs.tradePairs;
 const run = async function() {

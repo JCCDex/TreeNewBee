@@ -1,4 +1,4 @@
-const Configs = require("./testconfig");
+const Configs = require("./config");
 const ccxt = require("../../ccxt");
 const utils = {
   currentExchange: null,

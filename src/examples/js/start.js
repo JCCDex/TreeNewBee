@@ -1,9 +1,9 @@
 const program = require("commander");
 const process = require("process");
 const ordersMapping = require("./ordersMapping");
-const moveBrick = require("./testMoveBrick");
+const moveBrick = require("./moveBrick");
 const newOrdersMapping = require("./newOrderMapping");
-const threecorner = require("./threecorner");
+const threecorner = require("./threeCorner");
 program.version("0.0.1");
 program.usage("--help", "Show TreeNewBee help");
 let _description = "TreeNewBee command line tools";

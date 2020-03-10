@@ -1,5 +1,5 @@
 "use strict";
-const Configs = require("./testconfig");
+const Configs = require("./config");
 const util = require("./utils");
 const pairs = Configs.tradePairs;
 const profit = Configs.profit;
