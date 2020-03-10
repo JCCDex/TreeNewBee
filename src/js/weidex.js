@@ -14,7 +14,6 @@ const rpcNodes = ["http://39.98.243.77:50333", "http://39.104.188.146:50333", "h
 
 module.exports = class weidex extends Exchange {
   describe() {
-    // this.getConfigs ();
     return this.deepExtend(super.describe(), {
       id: "weidex",
       name: "WEIDEX",
@@ -77,7 +76,7 @@ module.exports = class weidex extends Exchange {
           get: [
             "info/depth/{currency}/{type}",
             "exchange/balances/{address}",
-            "exchange/detail/{hash}" // 挂单xingxi
+            "exchange/detail/{hash}" // 挂单信息
           ],
           post: []
         },
@@ -143,7 +142,6 @@ module.exports = class weidex extends Exchange {
   async fetchBalance() {
     await this.loadMarkets();
     const response = await this.publicGetExchangeBalancesAddress({ address: this.address });
-    // return response;
     const balances = response["data"];
     const result = { info: response };
     for (let i = 0; i < balances.length; i++) {
@@ -190,47 +188,8 @@ module.exports = class weidex extends Exchange {
   }
 
   parseOrder(order, market = undefined) {
-    //
-    //     {                  id:  13997833014,
-    //                    symbol: "ethbtc",
-    //              'account-id':  3398321,
-    //                    amount: "0.045000000000000000",
-    //                     price: "0.034014000000000000",
-    //              'created-at':  1545836976871,
-    //                      type: "sell-limit",
-    //            'field-amount': "0.045000000000000000", // they have fixed it for filled-amount
-    //       'field-cash-amount': "0.001530630000000000", // they have fixed it for filled-cash-amount
-    //              'field-fees': "0.000003061260000000", // they have fixed it for filled-fees
-    //             'finished-at':  1545837948214,
-    //                    source: "spot-api",
-    //                     state: "filled",
-    //             'canceled-at':  0                      }
-    //
-    //     {                  id:  20395337822,
-    //                    symbol: "ethbtc",
-    //              'account-id':  5685075,
-    //                    amount: "0.001000000000000000",
-    //                     price: "0.0",
-    //              'created-at':  1545831584023,
-    //                      type: "buy-market",
-    //            'field-amount': "0.029100000000000000", // they have fixed it for filled-amount
-    //       'field-cash-amount': "0.000999788700000000", // they have fixed it for filled-cash-amount
-    //              'field-fees': "0.000058200000000000", // they have fixed it for filled-fees
-    //             'finished-at':  1545831584181,
-    //                    source: "spot-api",
-    //                     state: "filled",
-    //             'canceled-at':  0                      }
-    //
     const id = this.safe_integer(order, "seq");
-    // let side = undefined;
     const type = "default";
-    // let status = undefined;
-    // if ('type' in order) {
-    //     const orderType = order['type'].split ('-');
-    //     side = orderType[0];
-    //     type = orderType[1];
-    //     status = this.parseOrderStatus (this.safeString (order, 'state'));
-    // }
     let symbol = undefined;
     let side = undefined;
     const timestamp = this.safeInteger(order, "time");
@@ -257,15 +216,6 @@ module.exports = class weidex extends Exchange {
     const cost = undefined;
     const remaining = amount;
     const average = undefined;
-    // if (filled !== undefined) {
-    //     if (amount !== undefined) {
-    //         remaining = amount - filled;
-    //     }
-    //     // if cost is defined and filled is not zero
-    //     if ((cost !== undefined) && (filled > 0)) {
-    //         average = cost / filled;
-    //     }
-    // }
     const feeCost = 0;
     const fee = 0;
     return {
@@ -319,7 +269,7 @@ module.exports = class weidex extends Exchange {
     return (Math.round(v * t) / t).toString();
   }
 
-  async cancelOrder(id, symbol = undefined) {
+  async cancelOrder(id) {
     const retry = 3;
     JCCExchange.init(rpcNodes, retry);
     const address = this.address;
@@ -524,47 +474,8 @@ module.exports = class weidex extends Exchange {
   }
 
   parseOrderDetail(order) {
-    //
-    //     {                  id:  13997833014,
-    //                    symbol: "ethbtc",
-    //              'account-id':  3398321,
-    //                    amount: "0.045000000000000000",
-    //                     price: "0.034014000000000000",
-    //              'created-at':  1545836976871,
-    //                      type: "sell-limit",
-    //            'field-amount': "0.045000000000000000", // they have fixed it for filled-amount
-    //       'field-cash-amount': "0.001530630000000000", // they have fixed it for filled-cash-amount
-    //              'field-fees': "0.000003061260000000", // they have fixed it for filled-fees
-    //             'finished-at':  1545837948214,
-    //                    source: "spot-api",
-    //                     state: "filled",
-    //             'canceled-at':  0                      }
-    //
-    //     {                  id:  20395337822,
-    //                    symbol: "ethbtc",
-    //              'account-id':  5685075,
-    //                    amount: "0.001000000000000000",
-    //                     price: "0.0",
-    //              'created-at':  1545831584023,
-    //                      type: "buy-market",
-    //            'field-amount': "0.029100000000000000", // they have fixed it for filled-amount
-    //       'field-cash-amount': "0.000999788700000000", // they have fixed it for filled-cash-amount
-    //              'field-fees': "0.000058200000000000", // they have fixed it for filled-fees
-    //             'finished-at':  1545831584181,
-    //                    source: "spot-api",
-    //                     state: "filled",
-    //             'canceled-at':  0                      }
-    //
     const id = this.safe_integer(order, "Sequence");
-    // let side = undefined;
     const type = "default";
-    // let status = undefined;
-    // if ('type' in order) {
-    //     const orderType = order['type'].split ('-');
-    //     side = orderType[0];
-    //     type = orderType[1];
-    //     status = this.parseOrderStatus (this.safeString (order, 'state'));
-    // }
     let symbol = undefined;
     let side = undefined;
     const timestamp = undefined;
@@ -591,15 +502,6 @@ module.exports = class weidex extends Exchange {
     const cost = undefined;
     const remaining = amount;
     const average = undefined;
-    // if (filled !== undefined) {
-    //     if (amount !== undefined) {
-    //         remaining = amount - filled;
-    //     }
-    //     // if cost is defined and filled is not zero
-    //     if ((cost !== undefined) && (filled > 0)) {
-    //         average = cost / filled;
-    //     }
-    // }
     const feeCost = 0;
     const fee = 0;
     return {
