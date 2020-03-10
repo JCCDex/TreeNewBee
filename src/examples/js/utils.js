@@ -14,11 +14,6 @@ const utils = {
             secret: Configs.jingtumHuobi.secret,
             enableRateLimit: true
           });
-          const configs = await this.currentExchange.fetch(Configs.weidexConfig.jc_config);
-          this.currentExchange.configs = configs;
-          // weidex2.configs = configs
-          const coinpairConfigs = await this.currentExchange.fetch(Configs.weidexConfig.coins_pairs_config);
-          this.currentExchange.coinpairConfigs = coinpairConfigs;
           await this.currentExchange.fetchMarkets();
           this.currentAlisa = "weidex";
           return this.currentExchange;

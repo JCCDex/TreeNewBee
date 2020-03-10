@@ -22,8 +22,28 @@ module.exports = class weidex extends Exchange {
       userAgent: this.userAgents["chrome39"],
       address: "",
       secret: "",
-      configs: {},
-      coinpairConfigs: {},
+      configs: {
+        exHosts: ["ejia348ffbda04.jccdex.cn", "ejib28c81e1ce5.jccdex.cn", "ejio68dd7d047f.jccdex.cn"],
+        infoHosts: ["ijiijhg293cabc.jccdex.cn", "ijijjh6753cabc.jccdex.cn", "ijikj98kyq754c.jccdex.cn", "ijin8hn7hcgyxk.jccdex.cn", "ijia3b44eb75ef.jccdex.cn", "ijib059e8792d5.jccdex.cn"]
+      },
+      coinpairConfigs: {
+        transPairs: [
+          {
+            dealArea: "USDT",
+            base: "JXRP",
+            baseTitle: "XRP",
+            counter: "JUSDT",
+            counterTitle: "USDT",
+            minAmount: 1,
+            priceDecimal: 4,
+            priceDecimals: { default: 4, decimals: [1, 2, 3, 4] },
+            amountDecimal: 0,
+            bidLimitDecimal: 4,
+            isInteger: true,
+            effectiveTime: { startTime: "0", endTime: "0" }
+          }
+        ]
+      },
       accounts: undefined,
       accountsById: undefined,
       hostname: "jccdex.cn",

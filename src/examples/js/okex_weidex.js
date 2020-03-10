@@ -18,15 +18,6 @@ const okex3 = new ccxt["okex3"]({
 
 // huobis orders move to weidex
 const run = async function() {
-  const configs = await weidex.fetch(Configs.weidexConfig.jc_config);
-  console.log(configs);
-  weidex.configs = configs;
-
-  const coinpairConfigs = await weidex.fetch(Configs.weidexConfig.coins_pairs_config);
-  console.log(coinpairConfigs);
-  weidex.coinpairConfigs = coinpairConfigs;
-  let marketWeidex = await weidex.fetchMarkets();
-  let marketokex3 = await okex3.fetchMarkets();
   let orders = [];
   let number = Math.floor(Math.random() * 10 + 20); //数量
   let stepIndex = 1; //深度排序

@@ -1,11 +1,12 @@
-const log = require("ololog").configure({ locate: false });
 const ccxt = require("../../ccxt");
 const Configs = require("./config");
+
 const weidex = new ccxt["weidex"]({
   address: Configs.jingtumHuobi.address,
   secret: Configs.jingtumHuobi.secret,
   enableRateLimit: true
 });
+
 const huobipro = new ccxt["huobipro"]({
   apiKey: Configs.huobi.access_key,
   secret: Configs.huobi.secretkey,
@@ -25,15 +26,6 @@ const huobipro = new ccxt["huobipro"]({
 
 // huobis orders move to weidex
 const run = async function() {
-  const configs = await weidex.fetch(Configs.weidexConfig.jc_config);
-  console.log(configs);
-  weidex.configs = configs;
-
-  const coinpairConfigs = await weidex.fetch(Configs.weidexConfig.coins_pairs_config);
-  console.log(coinpairConfigs);
-  weidex.coinpairConfigs = coinpairConfigs;
-  let marketWeidex = await weidex.fetchMarkets();
-  let marketHuobipro = await huobipro.fetchMarkets();
   let orders = [];
   let number = Math.floor(Math.random() * 10 + 20); //数量
   let stepIndex = 1; //深度排序
