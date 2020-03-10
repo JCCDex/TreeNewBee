@@ -288,7 +288,7 @@ module.exports = class weidex extends Exchange {
     };
   }
 
-  async createOrder(symbol, tradeType, side, num, price) {
+  async createOrder(symbol, tradeType, num, price) {
     await this.loadMarkets();
     const market = this.market(symbol);
     const retry = 3;
@@ -299,11 +299,10 @@ module.exports = class weidex extends Exchange {
     const base = market.baseId.toLowerCase();
     const counter = market.quoteId.toLowerCase();
     const sum = this.round(amount * price, 15);
-    const type = side.toLowerCase();
     try {
       console.log("start order");
       console.log(amount + "-" + base + "-" + counter + "-" + sum + "-" + type);
-      const hash = await JCCExchange.createOrder(address, secret, amount, base, counter, sum, type);
+      const hash = await JCCExchange.createOrder(address, secret, amount, base, counter, sum, tradeType);
       console.log("hash:" + hash);
       return hash;
     } catch (error) {
