@@ -9,7 +9,8 @@
 const Exchange = require("./base/Exchange");
 const { AuthenticationError, ExchangeError, ExchangeNotAvailable, InvalidOrder, OrderNotFound, InsufficientFunds, RequestTimeout, ArgumentsRequired } = require("./base/errors");
 const JCCExchange = require("jcc_exchange").JCCExchange;
-//  ---------------------------------------------------------------------------
+
+const rpcNodes = ["http://39.98.243.77:50333", "http://39.104.188.146:50333", "http://58.243.201.56:5050", "http://47.74.51.71:50333"];
 
 module.exports = class weidex extends Exchange {
   describe() {
@@ -290,38 +291,19 @@ module.exports = class weidex extends Exchange {
   async createOrder(symbol, tradeType, side, num, price) {
     await this.loadMarkets();
     const market = this.market(symbol);
-    const hosts = this.configs.exHosts;
-    // const hosts = ['srje071qdew231.jccdex.cn', 'srje115qd43qw2.jccdex.cn'];
-    console.log(hosts);
-    const port = 443;
-    const https = true;
-    const retry = 3; // default value
-    // init value of hosts、port、https & retry
-    JCCExchange.init(hosts, port, https, retry);
-    // create an order
-    // buy 1 jcc with 1 swt
-    // const address = this.address;
-    // const secret = this.secret;
-    // // const amount = "1";
-    // const base = market.baseId;
-    // const counter = market.quoteId;
-    // // const sum = '1';
-    // // const type = "buy"; // if sell 1 jjcc with 1 swt, the value of type is "sell"
-    // const platform = 'jac1nNfVMMawUSqRiauvXm2jhPj1E4Gukk'; // swtc address for service charge
-    // const issuer = 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or'; // the default value is "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or"
+    const retry = 3;
+    JCCExchange.init(rpcNodes, retry);
     const address = this.address;
     const secret = this.secret;
     const amount = this.round(num, 15);
     const base = market.baseId.toLowerCase();
     const counter = market.quoteId.toLowerCase();
     const sum = this.round(amount * price, 15);
-    const type = side.toLowerCase(); // if sell 1 jjcc with 1 swt, the value of type is "sell"
-    const platform = "jac1nNfVMMawUSqRiauvXm2jhPj1E4Gukk"; // swtc address for service charge
-    const issuer = "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or"; // the default value is "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or"
+    const type = side.toLowerCase();
     try {
       console.log("start order");
       console.log(amount + "-" + base + "-" + counter + "-" + sum + "-" + type);
-      const hash = await JCCExchange.createOrder(address, secret, amount, base, counter, sum, type, platform, issuer);
+      const hash = await JCCExchange.createOrder(address, secret, amount, base, counter, sum, type);
       console.log("hash:" + hash);
       return hash;
     } catch (error) {
@@ -339,13 +321,8 @@ module.exports = class weidex extends Exchange {
   }
 
   async cancelOrder(id, symbol = undefined) {
-    const hosts = this.configs.exHosts;
-    const port = 443;
-    const https = true;
-    const retry = 3; // default value
-    // init value of hosts、port、https & retry
-    JCCExchange.init(hosts, port, https, retry);
-    // cancel an order
+    const retry = 3;
+    JCCExchange.init(rpcNodes, retry);
     const address = this.address;
     const secret = this.secret;
     const orderSequence = id;
