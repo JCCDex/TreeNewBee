@@ -5,7 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "commander": "^2.9.0",
-    "jcc_exchange": "^2.0.4"
+    "jcc_exchange": "^3.1.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
