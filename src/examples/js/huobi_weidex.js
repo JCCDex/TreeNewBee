@@ -50,14 +50,14 @@ const getAskPrice = (orderBook, index) => {
 // 监听火币订单事件
 subscribeInst.on("huobiOrder", async (order) => {
   try {
-    sleep.sleep(10);
+    sleep.sleep(3);
     const orderInfo = await huobipro.fetchOrder(order.id);
     if (orderInfo) {
       const { side, filled, symbol, status } = orderInfo;
       const orderPrice = orderInfo.price;
       // 部分成交或完全成交，成交数量大于0
       if ((status === "partial-filled" || status === "filled" || status === "closed") && filled > 0) {
-        console.log("已成交");
+        console.log(`${symbol}${side === "buy" ? "买单" : "卖单"}, 价格: ${orderPrice}, 数量: ${filled}, 已成交`);
         if (side === "buy") {
           const price = orderPrice * (1 + config.profit);
           console.log(`开始挂火币卖单, 交易对: ${symbol}, 数量: ${filled}, 价格: ${price}`);
