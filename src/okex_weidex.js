@@ -43,10 +43,9 @@ const getAskPrice = (orderBook, index) => {
 subscribeInst.on("okexOrder", async (order) => {
   try {
     sleep.sleep(3);
-    const orderInfo = await okex3.fetchOrder(order.id);
+    const orderInfo = await okex3.fetchOrder(order.id, order.symbol);
     if (orderInfo) {
       const { side, filled, symbol, status } = orderInfo;
-      console.log(orderInfo);
       const orderPrice = orderInfo.price;
       // 部分成交或完全成交，成交数量大于0
       if ((status === "partial-filled" || status === "filled" || status === "closed") && filled > 0) {
@@ -79,6 +78,7 @@ subscribeInst.on("okexOrder", async (order) => {
       }
     }
   } catch (error) {
+    console.log(error);
     subscribeInst.emit("okexOrder", order);
   }
 });
