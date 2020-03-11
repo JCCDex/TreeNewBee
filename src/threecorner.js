@@ -1,7 +1,7 @@
 "use strict";
 const Configs = require("./config");
 const util = require("./utils");
-const math = require("./math");
+const math = require("mathjs");
 var getATicker = async function(pair) {
   const element = Configs.moveBrickExchanges[1];
   let ex = await util.utils.getExchange(element);

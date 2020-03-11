@@ -1,5 +1,5 @@
 const Configs = require("./config");
-const ccxt = require("../../ccxt");
+const ccxt = require("./ccxt");
 const utils = {
   currentExchange: null,
   currentAlisa: "",
