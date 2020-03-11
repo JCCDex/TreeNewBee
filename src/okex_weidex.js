@@ -6,8 +6,8 @@ const subscribeInst = SubscribeFactory.init();
 subscribeInst.setMaxListeners(100);
 
 const weidex = new ccxt["weidex"]({
-  address: config.jingtumHuobi.address,
-  secret: config.jingtumHuobi.secret,
+  address: config.jingtumOkex.address,
+  secret: config.jingtumOkex.secret,
   enableRateLimit: true
 });
 
