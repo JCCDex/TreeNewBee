@@ -270,8 +270,6 @@ module.exports = class weidex extends Exchange {
     const counter = market.quoteId.toLowerCase();
     const sum = this.round(amount * price, 15);
     try {
-      console.log("start order");
-      console.log(amount + "-" + base + "-" + counter + "-" + sum + "-" + type);
       const hash = await JCCExchange.createOrder(address, secret, amount, base, counter, sum, tradeType);
       console.log("hash:" + hash);
       return hash;
