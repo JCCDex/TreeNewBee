@@ -7,8 +7,8 @@ const profit = config.profit;
 const amountLimit = config.amountLimit;
 
 const weidex = new ccxt["weidex"]({
-  address: config.jingtumHuobi.address,
-  secret: config.jingtumHuobi.secret,
+  address: config.jingtumOkex.address,
+  secret: config.jingtumOkex.secret,
   enableRateLimit: true
 });
 
