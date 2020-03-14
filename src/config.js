@@ -1,6 +1,6 @@
 "use strict";
 
-const configs = {
+const config = {
   exchanges: [["huobi", "weidex"]],
   moveBrickExchanges: ["huobi", "weidex"],
   profit: 0.01, //搬砖利润率
@@ -18,10 +18,6 @@ const configs = {
     secretkey: "",
     privatekey: ""
   },
-  weidexConfig: {
-    jc_config: "https://weidex.vip/static/config/jc_config.json",
-    coins_pairs_config: "https://weidex.vip/static/config/coins_pairs_config.json"
-  },
   jingtumHuobi: {
     address: "",
     secret: ""
@@ -30,6 +26,11 @@ const configs = {
     address: "",
     secret: ""
   },
-  tradePairs: ["XRP/USDT"]
+  tradePairs: ["XRP/USDT"],
+  amountLimit: {
+    "XRP/USDT": {
+      maxAmount: 10
+    }
+  }
 };
-module.exports = configs;
+module.exports = config;
