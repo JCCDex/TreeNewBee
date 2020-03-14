@@ -51,28 +51,24 @@ const mappingPair = async (pair) => {
   // 等比例缩小100倍，如超过最大数量限制，映射限制的数量
   for (const bid of bids) {
     const [price, amount] = bid;
-    weidex
-      .createOrder(pair, "buy", amount / 100 > maxAmount ? maxAmount : amount / 100, price)
-      .then((res) => {
-        console.log("映射成功：", res);
-      })
-      .catch((error) => {
-        console.log("映射失败：", error);
-      });
+    try {
+      const res = await weidex.createOrder(pair, "buy", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
+      console.log("映射成功：", res);
+    } catch (error) {
+      console.log("映射失败：", error);
+    }
   }
 
   // 映射卖单
   // 等比例缩小100倍，如超过最大数量限制，映射限制的数量
   for (const ask of asks) {
     const [price, amount] = ask;
-    weidex
-      .createOrder(pair, "sell", amount / 100 > maxAmount ? maxAmount : amount / 100, price)
-      .then((res) => {
-        console.log("映射成功：", res);
-      })
-      .catch((error) => {
-        console.log("映射失败：", error);
-      });
+    try {
+      const res = await weidex.createOrder(pair, "sell", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
+      console.log("映射成功：", res);
+    } catch (error) {
+      console.log("映射失败：", error);
+    }
   }
 };
 
