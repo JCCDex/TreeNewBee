@@ -167,7 +167,8 @@ module.exports = class weidex extends Exchange {
     for (let i = 0; i < balances.length; i++) {
       const balance = balances[i];
       const currencyId = this.safeString(balance, "currency");
-      const code = this.safeCurrencyCode(currencyId);
+      let code = this.safeCurrencyCode(currencyId);
+      code = code.replace(/^J/, "");
       let account = undefined;
       if (code in result) {
         account = result[code];

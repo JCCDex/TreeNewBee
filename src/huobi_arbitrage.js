@@ -3,8 +3,7 @@ const BigNumber = require("bignumber.js");
 const ccxt = require("./ccxt");
 const config = require("./config");
 const pairs = config.tradePairs;
-const profit = config.profit;
-const amountLimit = config.amountLimit;
+const profit = config.arbitrageProfit;
 
 const weidex = new ccxt["weidex"]({
   address: config.jingtumHuobi.address,
@@ -38,6 +37,22 @@ const run = () => {
 // bids买单，asks卖单
 const startCheck = async (pair) => {
   try {
+    const marketsInfo = await huobipro.loadMarkets();
+    const costMin = marketsInfo[pair].limits.cost.min;
+    console.log("cost min: ", costMin);
+
+    const [huobiBalance, weidexBalance] = await Promise.all([huobipro.fetchBalance(), weidex.fetchBalance()]);
+    const [base, counter] = pair.split("/");
+    const huobi_base_free = huobiBalance[base].free;
+    const huobi_counter_free = huobiBalance[counter].free;
+    const weidex_base_free = weidexBalance[base].free;
+    const weidex_counter_free = weidexBalance[counter].free;
+
+    console.log(`火币${base}可用余额: `, huobi_base_free);
+    console.log(`火币${counter}可用余额: `, huobi_counter_free);
+    console.log(`威链${base}可用余额: `, weidex_base_free);
+    console.log(`威链${counter}可用余额: `, weidex_counter_free);
+
     const markets = await Promise.all([huobipro.fetchOrderBook(pair), weidex.fetchOrderBook(pair)]);
     const [huobiMarkets, weidexMarkets] = markets;
 
@@ -55,7 +70,6 @@ const startCheck = async (pair) => {
     console.log(`${pair} 威链最高价买单：`, maxWeidexBid);
     console.log(`${pair} 威链最低价卖单：`, minWeidexAsk);
 
-    const maxAmount = amountLimit[pair].maxAmount;
     // 威链买火币卖
     // 比较威链最低卖单和火币最高买单
     if (
@@ -65,11 +79,20 @@ const startCheck = async (pair) => {
         .isGreaterThanOrEqualTo(profit)
     ) {
       // 威链买火币卖
+      // 以XRP/USDT为例
+      // 威链上用usdt买xrp, 火币上卖xrp
       console.log("威链买火币卖");
       const [weidexPrice, weidexAmount] = minWeidexAsk;
       const [huobiPrice, huobiAmount] = maxHuobiBid;
       let amount = weidexAmount > huobiAmount ? huobiAmount : weidexAmount;
-      amount = amount > maxAmount ? maxAmount : amount;
+      amount = new BigNumber(amount).gt(huobi_base_free) ? huobi_base_free : amount;
+
+      if (new BigNumber(amount).multipliedBy(weidexPrice).lt(weidex_counter_free)) {
+        return;
+      }
+      if (new BigNumber(amount).multipliedBy(huobiPrice).lt(costMin)) {
+        return;
+      }
       await huobipro.createOrder(pair, "limit", "sell", amount, huobiPrice);
       await weidex.createOrder(pair, "buy", amount, weidexPrice);
     }
@@ -82,11 +105,20 @@ const startCheck = async (pair) => {
         .isGreaterThanOrEqualTo(profit)
     ) {
       // 威链卖火币买
+      // 以XRP/USDT为例
+      // 火币上用usdt买xrp, 威链上卖xrp
       console.log("威链卖火币买");
       const [weidexPrice, weidexAmount] = maxWeidexBid;
       const [huobiPrice, huobiAmount] = minHuobiAsk;
       let amount = weidexAmount > huobiAmount ? huobiAmount : weidexAmount;
-      amount = amount > maxAmount ? maxAmount : amount;
+      amount = new BigNumber(amount).gt(weidex_base_free) ? weidex_base_free : amount;
+
+      if (new BigNumber(amount).multipliedBy(huobiPrice).lt(huobi_counter_free)) {
+        return;
+      }
+      if (new BigNumber(amount).multipliedBy(huobiPrice).lt(costMin)) {
+        return;
+      }
       await huobipro.createOrder(pair, "limit", "buy", amount, huobiPrice);
       await weidex.createOrder(pair, "sell", amount, weidexPrice);
     }

@@ -3,8 +3,7 @@ const BigNumber = require("bignumber.js");
 const ccxt = require("./ccxt");
 const config = require("./config");
 const pairs = config.tradePairs;
-const profit = config.profit;
-const amountLimit = config.amountLimit;
+const profit = config.arbitrageProfit;
 
 const weidex = new ccxt["weidex"]({
   address: config.jingtumOkex.address,
@@ -30,6 +29,22 @@ const run = () => {
 // bids买单，asks卖单
 const startCheck = async (pair) => {
   try {
+    const marketsInfo = await okex3.loadMarkets();
+    const costMin = marketsInfo[pair].limits.cost.min;
+    console.log("cost min: ", costMin);
+
+    const [okexBalance, weidexBalance] = await Promise.all([okex3.fetchBalance(), weidex.fetchBalance()]);
+    const [base, counter] = pair.split("/");
+    const okex_base_free = okexBalance[base].free;
+    const okex_counter_free = okexBalance[counter].free;
+    const weidex_base_free = weidexBalance[base].free;
+    const weidex_counter_free = weidexBalance[counter].free;
+
+    console.log(`okex${base}可用余额: `, okex_base_free);
+    console.log(`okex${counter}可用余额: `, okex_counter_free);
+    console.log(`威链${base}可用余额: `, weidex_base_free);
+    console.log(`威链${counter}可用余额: `, weidex_counter_free);
+
     const markets = await Promise.all([okex3.fetchOrderBook(pair), weidex.fetchOrderBook(pair)]);
     const [huobiMarkets, weidexMarkets] = markets;
 
@@ -47,7 +62,6 @@ const startCheck = async (pair) => {
     console.log(`${pair} 威链最高价买单：`, maxWeidexBid);
     console.log(`${pair} 威链最低价卖单：`, minWeidexAsk);
 
-    const maxAmount = amountLimit[pair].maxAmount;
     // 威链买okex卖
     // 比较威链最低卖单和okex最高买单
     if (
@@ -57,11 +71,22 @@ const startCheck = async (pair) => {
         .isGreaterThanOrEqualTo(profit)
     ) {
       // 威链买okex卖
+      // 以XRP/USDT为例
+      // 威链上用usdt买xrp, okex上卖xrp
       console.log("威链买okex卖");
       const [weidexPrice, weidexAmount] = minWeidexAsk;
       const [okexPrice, okexAmount] = maxHuobiBid;
       let amount = weidexAmount > okexAmount ? okexAmount : weidexAmount;
-      amount = amount > maxAmount ? maxAmount : amount;
+      amount = new BigNumber(amount).gt(okex_base_free) ? okex_base_free : amount;
+
+      if (new BigNumber(amount).multipliedBy(weidexPrice).lt(weidex_counter_free)) {
+        return;
+      }
+
+      if (new BigNumber(amount).multipliedBy(okexPrice).lt(costMin)) {
+        return;
+      }
+
       await okex3.createOrder(pair, "limit", "sell", amount, okexPrice);
       await weidex.createOrder(pair, "buy", amount, weidexPrice);
     }
@@ -74,11 +99,20 @@ const startCheck = async (pair) => {
         .isGreaterThanOrEqualTo(profit)
     ) {
       // 威链卖okex买
+      // 以XRP/USDT为例
+      // okex上用usdt买xrp, 威链上卖xrp
       console.log("威链卖okex买");
       const [weidexPrice, weidexAmount] = maxWeidexBid;
       const [okexPrice, okexAmount] = minHuobiAsk;
       let amount = weidexAmount > okexAmount ? okexAmount : weidexAmount;
-      amount = amount > maxAmount ? maxAmount : amount;
+      amount = new BigNumber(amount).gt(weidex_base_free) ? weidex_base_free : amount;
+
+      if (new BigNumber(amount).multipliedBy(okexPrice).lt(okex_counter_free)) {
+        return;
+      }
+      if (new BigNumber(amount).multipliedBy(okexPrice).lt(costMin)) {
+        return;
+      }
       await okex3.createOrder(pair, "limit", "buy", amount, okexPrice);
       await weidex.createOrder(pair, "sell", amount, weidexPrice);
     }

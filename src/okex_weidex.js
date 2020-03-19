@@ -51,7 +51,7 @@ subscribeInst.on("okexOrder", async (order) => {
       if ((status === "partial-filled" || status === "filled" || status === "closed") && filled > 0) {
         console.log(`${symbol}${side === "buy" ? "买单" : "卖单"}, 价格: ${orderPrice}, 数量: ${filled}, 已成交`);
         if (side === "buy") {
-          const price = orderPrice * (1 + config.profit);
+          const price = orderPrice * (1 + config.gridProfit);
           console.log(`开始挂okex卖单, 交易对: ${symbol}, 数量: ${filled}, 价格: ${price}`);
           const res = await okex3.createOrder(symbol, "limit", "sell", filled, price);
           subscribeInst.emit("okexOrder", res);
@@ -62,7 +62,7 @@ subscribeInst.on("okexOrder", async (order) => {
             console.log("威链卖单失败:", error);
           }
         } else if (side === "sell") {
-          const price = orderPrice * (1 - config.profit);
+          const price = orderPrice * (1 - config.gridProfit);
           console.log(`开始挂okex买单, 交易对: ${symbol}, 数量: ${filled}, 价格: ${price}`);
           const res = await okex3.createOrder(symbol, "limit", "buy", filled, price);
           subscribeInst.emit("okexOrder", res);
