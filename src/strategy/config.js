@@ -27,6 +27,11 @@ const config = {
     address: "",
     secret: ""
   },
+  // 井通搬砖钱包
+  jingtumArbitrage: {
+    address: "",
+    secret: ""
+  },
   tradePairs: ["XRP/USDT"],
   amountLimit: {
     "XRP/USDT": {

@@ -1,13 +1,13 @@
 "use strict";
 const BigNumber = require("bignumber.js");
-const ccxt = require("./ccxt");
+const ccxt = require("../ccxt");
 const config = require("./config");
 const pairs = config.tradePairs;
 const profit = config.arbitrageProfit;
 
 const weidex = new ccxt["weidex"]({
-  address: config.jingtumHuobi.address,
-  secret: config.jingtumHuobi.secret,
+  address: config.jingtumArbitrage.address,
+  secret: config.jingtumArbitrage.secret,
   enableRateLimit: true
 });
 

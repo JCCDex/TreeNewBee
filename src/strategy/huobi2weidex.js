@@ -1,20 +1,28 @@
-const ccxt = require("./ccxt");
+const ccxt = require("../ccxt");
 const config = require("./config");
 const amountLimit = config.amountLimit;
 
 const weidex = new ccxt["weidex"]({
-  address: config.jingtumOkex.address,
-  secret: config.jingtumOkex.secret,
+  address: config.jingtumHuobi.address,
+  secret: config.jingtumHuobi.secret,
   enableRateLimit: true
 });
 
-const okex3 = new ccxt["okex3"]({
-  apiKey: config.okex.access_key,
-  secret: config.okex.secretkey,
+const huobipro = new ccxt["huobipro"]({
+  apiKey: config.huobi.access_key,
+  secret: config.huobi.secretkey,
   verbose: false,
   timeout: 60000,
   enableRateLimit: true,
-  password: config.okex.privatekey
+  urls: {
+    api: {
+      market: config.huobi.market,
+      public: config.huobi.public,
+      private: config.huobi.private,
+      zendesk: config.huobi.zendesk
+    }
+  },
+  hostname: config.huobi.hostname
 });
 
 const cancelWeidexOrders = async (pair) => {
@@ -33,7 +41,7 @@ const cancelWeidexOrders = async (pair) => {
   }
 };
 
-// okex订单映射到威链上
+// 火币订单映射到威链上
 const startMapping = () => {
   let pairs = config.tradePairs;
   for (const pair of pairs) {
@@ -43,7 +51,7 @@ const startMapping = () => {
 
 const mappingPair = async (pair) => {
   await cancelWeidexOrders(pair);
-  const order = await okex3.fetchOrderBook(pair);
+  const order = await huobipro.fetchOrderBook(pair);
   const { bids, asks } = order;
 
   const maxAmount = amountLimit[pair].maxAmount;
@@ -64,7 +72,7 @@ const mappingPair = async (pair) => {
   for (const ask of asks) {
     const [price, amount] = ask;
     try {
-      const res = await weidex.createOrder(pair, "sell", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
+      const res = await weidex.createOrder(pair, "buy", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
       console.log("映射成功：", res);
     } catch (error) {
       console.log("映射失败：", error);
