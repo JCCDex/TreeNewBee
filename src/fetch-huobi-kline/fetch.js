@@ -24,6 +24,13 @@ if (!constant.symbolRegx.test(symbol)) {
   process.exit(0);
 }
 
+const file = `./periods/${symbol}/${period}`;
+
+if (!fs.existsSync(file)) {
+  console.error(`${file} is not exist, please run 'generate-period.js' firstly.`);
+  process.exit(0);
+}
+
 const symbolFolder = path.join(__dirname, "kline-data", symbol);
 if (!fs.existsSync(symbolFolder)) {
   fs.mkdirSync(symbolFolder);
@@ -38,13 +45,6 @@ let rl;
 let num = 0;
 
 ws.on("open", () => {
-  const file = `./periods/${symbol}/${period}`;
-
-  if (!fs.existsSync(file)) {
-    console.error(`${file} is not exist, please run 'generate-period.js' firstly.`);
-    process.exit(0);
-  }
-
   rl = readline.createInterface({
     input: fs.createReadStream(file),
     output: process.stdout,
