@@ -41,7 +41,7 @@ ws.on("open", () => {
   const file = `./periods/${symbol}/${period}`;
 
   if (!fs.existsSync(file)) {
-    console.error(`${file} is not exist, please run 'geneate-period.js' firstly.`);
+    console.error(`${file} is not exist, please run 'generate-period.js' firstly.`);
     process.exit(0);
   }
 
