@@ -50,10 +50,12 @@
   "dependencies": {
     "@types/node": "^13.9.0",
     "bignumber.js": "^9.0.0",
-    "commander": "^2.9.0",
+    "commander": "^5.0.0",
     "jcc_exchange": "^3.1.0",
-    "mathjs": "^6.6.1",
-    "sleep": "^6.1.0"
+    "pako": "^1.0.11",
+    "sleep": "^6.1.0",
+    "tinydate": "^1.2.0",
+    "ws": "^7.2.3"
   },
   "devDependencies": {
     "ansicolor": "1.1.81",

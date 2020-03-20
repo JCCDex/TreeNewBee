@@ -103,3 +103,9 @@ dist
 # TernJS port file
 .tern-port
 .DS_Store
+
+src/fetch-huobi-kline/kline-data/**/*
+!src/fetch-huobi-kline/kline-data/.gitkeep
+
+src/fetch-huobi-kline/periods/**/*
+!src/fetch-huobi-kline/periods/.gitkeep
