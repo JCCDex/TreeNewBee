@@ -115,7 +115,7 @@ const handleMessage = (blob) => {
     const from = Number(ids[0]);
     const to = Number(ids[1]);
 
-    if (constant.reqRegx.test(rep)) {
+    if (constant.klineTopicRegx.test(rep)) {
       let filterData;
       if (/[0-9]+[week|mon|year]/.test(rep)) {
         filterData = data;
