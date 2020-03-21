@@ -111,11 +111,11 @@ const handleMessage = (blob) => {
       console.log(result["err-msg"]);
       return;
     }
-    const ids = id.split("/");
-    const from = Number(ids[0]);
-    const to = Number(ids[1]);
 
     if (constant.klineTopicRegx.test(rep)) {
+      const ids = id.split("/");
+      const from = Number(ids[0]);
+      const to = Number(ids[1]);
       let filterData;
       if (/[0-9]+[week|mon|year]/.test(rep)) {
         filterData = data;
@@ -125,8 +125,8 @@ const handleMessage = (blob) => {
       if (Array.isArray(filterData) && filterData.length > 0) {
         const firstTime = filterData[0].id;
         const lastTime = filterData[filterData.length - 1].id;
-        console.log("first date:", new Date(firstTime * 1000));
-        console.log("last date: ", new Date(lastTime * 1000));
+        console.log("first date:", tinydate("{YYYY}.{MM}.{DD} {HH}:{mm}")(new Date(firstTime * 1000)));
+        console.log("last date: ", tinydate("{YYYY}.{MM}.{DD} {HH}:{mm}")(new Date(lastTime * 1000)));
       }
       fs.writeFileSync(getPath({ req: rep, id }), JSON.stringify(filterData, null, 2));
     }

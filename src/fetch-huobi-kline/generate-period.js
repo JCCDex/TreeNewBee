@@ -37,7 +37,7 @@ const generateWithInterval = (period, symbol, interval) => {
         req
       };
       fs.appendFileSync(path.join(symbolFolder, period), JSON.stringify(data) + "\n");
-      from = to;
+      from = to + interval;
     } catch (error) {
       console.log(error);
       process.exit(0);
