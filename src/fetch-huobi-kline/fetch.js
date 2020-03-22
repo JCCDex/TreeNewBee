@@ -10,7 +10,7 @@ const constant = require("./constant");
 const { getPath } = require("../util");
 
 program
-  .usage("fetch kline data of huobi")
+  .description("fetch kline data of huobi")
   .requiredOption("-p, --period <kline period>", "value of period is one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'")
   .requiredOption("-s, --symbol <symbol>", "symbol likes 'btcusdt'")
   .parse(process.argv);

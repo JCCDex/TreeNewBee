@@ -3,7 +3,7 @@ const path = require("path");
 const program = require("commander");
 const constant = require("./constant");
 program
-  .usage("generate period file for fetching data of huobi kline")
+  .description("generate period file for fetching data of huobi kline")
   .requiredOption("-p, --period <kline period>", "value of period is one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'")
   .requiredOption("-s, --symbol <symbol>", "symbol likes 'btcusdt'")
   .parse(process.argv);
