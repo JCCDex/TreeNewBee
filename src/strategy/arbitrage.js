@@ -15,6 +15,7 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
   };
 
   const startArbitrage = async (pair) => {
+    console.log(`------${pair}套利开始------`);
     try {
       const marketsInfo = await targetExchange.loadMarkets();
       const limits = marketsInfo[pair].limits;
@@ -117,7 +118,7 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
           return;
         }
         if (new BigNumber(amount).multipliedBy(targetPrice).lt(costMin)) {
-          console.log(`不符合${targetName}最小挂单额`);
+          console.log(`不符合${targetName}最小挂单总额`);
           return;
         }
         await targetExchange.createOrder(pair, "limit", "buy", amount, targetPrice);
@@ -125,6 +126,8 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      console.log(`------${pair}套利结束------\n`);
     }
   };
 
