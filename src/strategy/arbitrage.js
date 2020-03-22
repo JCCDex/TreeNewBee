@@ -82,7 +82,7 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
         console.log("weidex price:", weidexPrice);
         console.log("weidex match total amount:", weidexAmount);
         const [targetPrice, targetAmount] = maxTargetBid;
-        let amount = weidexAmount > targetAmount ? targetAmount : weidexAmount;
+        let amount = new BigNumber(weidexAmount).gt(targetAmount) ? targetAmount : weidexAmount;
         amount = new BigNumber(amount).gt(target_base_free) ? target_base_free : amount;
 
         if (new BigNumber(amount).lt(amountMin) || new BigNumber(amount).multipliedBy(targetPrice).lt(costMin)) {
@@ -101,12 +101,6 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
           return;
         }
 
-        // 检查目标交易所 base数量
-        if (new BigNumber(amount).lt(target_base_free)) {
-          console.log(`${targetName} ${base}余额不足`);
-          return;
-        }
-
         await targetExchange.createOrder(pair, "limit", "sell", amount, targetPrice);
         await weidexExchange.createOrder(pair, "buy", amount, new BigNumber(weidexPrice).multipliedBy(1.001).toNumber());
       }
@@ -120,7 +114,7 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
         console.log("weidex price:", weidexPrice);
         console.log("weidex match total amount:", weidexAmount);
         const [targetPrice, targetAmount] = minTargetAsk;
-        let amount = weidexAmount > targetAmount ? targetAmount : weidexAmount;
+        let amount = new BigNumber(weidexAmount).gt(targetAmount) ? targetAmount : weidexAmount;
         amount = new BigNumber(amount).gt(weidex_base_free) ? weidex_base_free : amount;
 
         // 检查挂单数量和总额是否符合目标交易所要求
@@ -132,12 +126,6 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
         // 检查目标交易所counter数量
         if (new BigNumber(amount).multipliedBy(targetPrice).gt(target_counter_free)) {
           console.log(`${targetName} ${counter}余额不足`);
-          return;
-        }
-
-        // 检查weidex base数量
-        if (new BigNumber(amount).lt(weidex_base_free)) {
-          console.log(`${weidexName} ${base}余额不足`);
           return;
         }
 
