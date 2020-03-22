@@ -110,9 +110,9 @@ src/fetch-huobi-kline/kline-data/**/*
 src/fetch-huobi-kline/periods/**/*
 !src/fetch-huobi-kline/periods/.gitkeep
 
-src/fetch-okex3-kline/kline-data/**/*
-!src/fetch-okex3-kline/kline-data/.gitkeep
+src/fetch-okex-kline/kline-data/**/*
+!src/fetch-okex-kline/kline-data/.gitkeep
 
-src/fetch-okex3-kline/periods/**/*
-!src/fetch-okex3-kline/periods/.gitkeep
+src/fetch-okex-kline/periods/**/*
+!src/fetch-okex-kline/periods/.gitkeep
 
