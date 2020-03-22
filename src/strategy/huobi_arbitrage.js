@@ -6,7 +6,7 @@ const ArbitrageFactory = require("./arbitrage");
 
 program
   .description("arbitrage between huobi and weidex")
-  .option("-p, --period <run period>", "run period, is number", 30)
+  .option("-p, --period <number>", "run period", 30)
   .parse(process.argv);
 
 const weidex = new ccxt["weidex"]({

@@ -11,8 +11,8 @@ const { getPath } = require("../util");
 
 program
   .description("fetch kline data of huobi")
-  .requiredOption("-p, --period <kline period>", "value of period is one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'")
-  .requiredOption("-s, --symbol <symbol>", "symbol likes 'btcusdt'")
+  .requiredOption("-p, --period <string>", "value of period is one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'")
+  .requiredOption("-s, --symbol <string>", "symbol likes 'btcusdt'")
   .parse(process.argv);
 
 const { period, symbol } = program;

@@ -4,8 +4,8 @@ const program = require("commander");
 const constant = require("./constant");
 program
   .description("generate period file for fetching data of okex kline")
-  .requiredOption("-p, --period <kline period>", "value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'")
-  .requiredOption("-s, --symbol <symbol>", "symbol likes 'btc-usdt'")
+  .requiredOption("-p, --period <string>", "value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'")
+  .requiredOption("-s, --symbol <string>", "symbol likes 'btc-usdt'")
   .parse(process.argv);
 
 const generateWithInterval = (period, symbol) => {
