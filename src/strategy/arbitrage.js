@@ -85,18 +85,25 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
         let amount = weidexAmount > targetAmount ? targetAmount : weidexAmount;
         amount = new BigNumber(amount).gt(target_base_free) ? target_base_free : amount;
 
-        if (new BigNumber(amount).lt(amountMin)) {
-          console.log(`不符合${targetName}最小挂单数量`);
+        if (new BigNumber(amount).lt(amountMin) || new BigNumber(amount).multipliedBy(targetPrice).lt(costMin)) {
+          console.log(`不符合${targetName}最小挂单数量或最小挂单总额`);
           return;
         }
 
-        if (new BigNumber(amount).multipliedBy(weidexPrice).gt(weidex_counter_free)) {
+        // 检查weidex counter数量
+        if (
+          new BigNumber(amount)
+            .multipliedBy(weidexPrice)
+            .multipliedBy(1.001)
+            .gt(weidex_counter_free)
+        ) {
           console.log(`${weidexName} ${counter}余额不足`);
           return;
         }
 
-        if (new BigNumber(amount).multipliedBy(targetPrice).lt(costMin)) {
-          console.log(`不符合${targetName}最小挂单总额`);
+        // 检查目标交易所 base数量
+        if (new BigNumber(amount).lt(target_base_free)) {
+          console.log(`${targetName} ${base}余额不足`);
           return;
         }
 
@@ -116,19 +123,24 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
         let amount = weidexAmount > targetAmount ? targetAmount : weidexAmount;
         amount = new BigNumber(amount).gt(weidex_base_free) ? weidex_base_free : amount;
 
-        if (new BigNumber(amount).lt(amountMin)) {
-          console.log(`不符合${targetName}最小挂单数量`);
+        // 检查挂单数量和总额是否符合目标交易所要求
+        if (new BigNumber(amount).lt(amountMin) || new BigNumber(amount).multipliedBy(targetPrice).lt(costMin)) {
+          console.log(`不符合${targetName}最小挂单数量或最小挂单总额`);
           return;
         }
 
+        // 检查目标交易所counter数量
         if (new BigNumber(amount).multipliedBy(targetPrice).gt(target_counter_free)) {
           console.log(`${targetName} ${counter}余额不足`);
           return;
         }
-        if (new BigNumber(amount).multipliedBy(targetPrice).lt(costMin)) {
-          console.log(`不符合${targetName}最小挂单总额`);
+
+        // 检查weidex base数量
+        if (new BigNumber(amount).lt(weidex_base_free)) {
+          console.log(`${weidexName} ${base}余额不足`);
           return;
         }
+
         await targetExchange.createOrder(pair, "limit", "buy", amount, targetPrice);
         await weidexExchange.createOrder(pair, "sell", amount, new BigNumber(weidexPrice).multipliedBy(0.999).toNumber());
       }
