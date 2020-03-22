@@ -41,6 +41,20 @@ module.exports = class weidex extends Exchange {
             bidLimitDecimal: 4,
             isInteger: true,
             effectiveTime: { startTime: "0", endTime: "0" }
+          },
+          {
+            dealArea: "USDT",
+            base: "JETH",
+            baseTitle: "ETH",
+            counter: "JUSDT",
+            counterTitle: "USDT",
+            minAmount: 0.01,
+            priceDecimal: 2,
+            priceDecimals: { default: 2, decimals: [-1, 1, 2] },
+            amountDecimal: 2,
+            bidLimitDecimal: 2,
+            isInteger: false,
+            effectiveTime: { startTime: "0", endTime: "0" }
           }
         ]
       },

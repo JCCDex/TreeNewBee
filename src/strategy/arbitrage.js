@@ -26,6 +26,14 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
 
       const [targetBalance, weidexBalance] = await Promise.all([targetExchange.fetchBalance(), weidexExchange.fetchBalance()]);
       const [base, counter] = pair.split("/");
+      if (!targetBalance[base]) {
+        console.log(`${targetName} ${base} token不存在`);
+        process.exit(0);
+      }
+      if (!targetBalance[counter]) {
+        console.log(`${targetName} ${counter} token不存在`);
+        process.exit(0);
+      }
       const target_base_free = targetBalance[base].free;
       const target_counter_free = targetBalance[counter].free;
       const weidex_base_free = weidexBalance[base].free;
