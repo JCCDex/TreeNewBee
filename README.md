@@ -10,7 +10,7 @@
 
 1. 准备工作
 
-```shell
+```javascript
 1. git clone https://github.com/JCCDex/TreeNewBee.git
 
 2. cd src
@@ -25,7 +25,7 @@
 
 2. 在 huobi 和 weidex 之间搬砖
 
-```shell
+```javascript
 // 执行周期: 30s, 默认状态
 node huobi_arbitrage.js
 
@@ -35,7 +35,7 @@ node huobi_arbitrage.js -p 60
 
 3. 在 okex 和 weidex 之间搬砖
 
-```shell
+```javascript
 // 执行周期: 30s, 默认状态
 node okex_arbitrage.js
 
