@@ -5,6 +5,7 @@ const tinydate = require("tinydate");
 const program = require("commander");
 const axios = require("axios");
 const constant = require("./constant");
+const { getPath } = require("../util");
 
 const service = axios.create({
   timeout: 30000,
@@ -21,25 +22,25 @@ service.interceptors.response.use(
 );
 
 program
-  .usage("[options]")
+  .usage("fetch kline data of okex")
   .requiredOption("-p, --period <kline period>", "value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'")
-  .requiredOption("-s, --symbol <symbol>", "symbol like 'btc-usdt'")
+  .requiredOption("-s, --symbol <symbol>", "symbol likes 'btc-usdt'")
   .parse(process.argv);
 
 const { period, symbol } = program;
 if (!constant.periodRegx.test(period)) {
-  console.error("value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'");
+  console.log("value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'.");
   process.exit(0);
 }
 if (!constant.symbolRegx.test(symbol)) {
-  console.log("value of symbol is invalid");
+  console.log("value of symbol is invalid, symbol likes 'btc-usdt'.");
   process.exit(0);
 }
 
 const file = `./periods/${symbol}/${period}`;
 
 if (!fs.existsSync(file)) {
-  console.error(`${file} is not exist, please run 'generate-period.js' firstly.`);
+  console.log(`${file} is not exist, please run 'generate-period.js' firstly.`);
   process.exit(0);
 }
 
@@ -65,7 +66,7 @@ rl = readline.createInterface({
 rl.on("line", (line) => {
   try {
     const data = JSON.parse(line);
-    const file = getPath(data);
+    const file = getPath(Object.assign(data, { folder: periodFolder }));
     if (!fs.existsSync(file)) {
       num = num + 1;
       setTimeout(() => {
@@ -76,26 +77,6 @@ rl.on("line", (line) => {
     console.log(error);
   }
 });
-
-const getPath = (data) => {
-  const { start, end, period } = data;
-  let format;
-  if (/[0-9]+min/.test(period)) {
-    format = "{YYYY}.{MM}.{DD}:{HH}:{mm}";
-  } else if (/[0-9]+hour/.test(period)) {
-    format = "{YYYY}.{MM}.{DD}:{HH}";
-  } else if (/[0-9]+day/.test(period)) {
-    format = "{YYYY}.{MM}.{DD}";
-  } else if (/[0-9]+week/.test(period)) {
-    format = "{YYYY}.{MM}.{DD}";
-  } else if (/[0-9]+mon/.test(period)) {
-    format = "{YYYY}.{MM}";
-  } else if (/[0-9]+year/.test(period)) {
-    format = "{YYYY}";
-  }
-  const filename = tinydate(format)(new Date(start)) + "-" + tinydate(format)(new Date(end));
-  return path.join(periodFolder, filename);
-};
 
 const fetchKline = async (data) => {
   try {
@@ -115,7 +96,7 @@ const fetchKline = async (data) => {
       console.log("first date:", tinydate("{YYYY}.{MM}.{DD} {HH}:{mm}")(new Date(firstTime)));
       console.log("last date: ", tinydate("{YYYY}.{MM}.{DD} {HH}:{mm}")(new Date(lastTime)));
     }
-    fs.writeFileSync(getPath(data), JSON.stringify(res, null, 2));
+    fs.writeFileSync(getPath(Object.assign(data, { folder: periodFolder })), JSON.stringify(res, null, 2));
   } catch (error) {
     console.log(error);
   }

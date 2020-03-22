@@ -3,9 +3,9 @@ const path = require("path");
 const program = require("commander");
 const constant = require("./constant");
 program
-  .usage("[options]")
+  .usage("generate period file for fetching data of huobi kline")
   .requiredOption("-p, --period <kline period>", "value of period is one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'")
-  .requiredOption("-s, --symbol <symbol>", "symbol like 'btcusdt'")
+  .requiredOption("-s, --symbol <symbol>", "symbol likes 'btcusdt'")
   .parse(process.argv);
 
 const generateWithInterval = (period, symbol, interval) => {
@@ -18,7 +18,7 @@ const generateWithInterval = (period, symbol, interval) => {
   let sum = 299 * interval;
   const req = `market.${symbol}.kline.${period}`;
   if (!constant.klineTopicRegx.test(req)) {
-    console.error("req is invalid");
+    console.log("req is invalid.");
     process.exit(0);
   }
 
@@ -68,7 +68,7 @@ const generateWithoutInterval = (period, symbol) => {
   const req = `market.${symbol}.kline.${period}`;
 
   if (!constant.klineTopicRegx.test(req)) {
-    console.error("req is invalid");
+    console.log("req is invalid");
     process.exit(0);
   }
 
@@ -85,18 +85,18 @@ const generateWithoutInterval = (period, symbol) => {
     fs.appendFileSync(path.join(symbolFolder, period), JSON.stringify(data) + "\n");
   } catch (error) {
     console.log(error);
-    process.exit(1);
+    process.exit(0);
   }
 };
 
 const generate = () => {
   const { period, symbol } = program;
   if (!constant.periodRegx.test(period)) {
-    console.error("value of period must be one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'");
+    console.log("value of period must be one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'.");
     process.exit(0);
   }
   if (!constant.symbolRegx.test(symbol)) {
-    console.log("value of symbol is invalid");
+    console.log("value of symbol is invalid, symbol likes 'btcusdt'.");
     process.exit(0);
   }
   switch (period) {

@@ -7,27 +7,28 @@ const tinydate = require("tinydate");
 const ws = new WebSocket("wss://api.huobi.pro/ws");
 const program = require("commander");
 const constant = require("./constant");
+const { getPath } = require("../util");
 
 program
-  .usage("[options]")
+  .usage("fetch kline data of huobi")
   .requiredOption("-p, --period <kline period>", "value of period is one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'")
-  .requiredOption("-s, --symbol <symbol>", "symbol like 'btcusdt'")
+  .requiredOption("-s, --symbol <symbol>", "symbol likes 'btcusdt'")
   .parse(process.argv);
 
 const { period, symbol } = program;
 if (!constant.periodRegx.test(period)) {
-  console.error("value of period must be one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'");
+  console.log("value of period must be one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'.");
   process.exit(0);
 }
 if (!constant.symbolRegx.test(symbol)) {
-  console.log("value of symbol is invalid");
+  console.log("value of symbol is invalid, symbol likes 'btcusdt'.");
   process.exit(0);
 }
 
 const file = `./periods/${symbol}/${period}`;
 
 if (!fs.existsSync(file)) {
-  console.error(`${file} is not exist, please run 'generate-period.js' firstly.`);
+  console.log(`${file} is not exist, please run 'generate-period.js' firstly.`);
   process.exit(0);
 }
 
@@ -54,7 +55,9 @@ ws.on("open", () => {
   rl.on("line", (line) => {
     try {
       const data = JSON.parse(line);
-      const file = getPath(data);
+      const ids = data.id.split("/");
+      const file = getPath({ period: data.req, start: Number(ids[0]) * 1000, end: Number(ids[1]) * 1000, folder: periodFolder });
+
       if (!fs.existsSync(file)) {
         num = num + 1;
         setTimeout(() => {
@@ -70,29 +73,6 @@ ws.on("open", () => {
 ws.on("message", (blob) => {
   handleMessage(blob);
 });
-
-const getPath = (data) => {
-  const { id, req } = data;
-  const ids = id.split("/");
-  let from = Number(ids[0]) * 1000;
-  let to = Number(ids[1]) * 1000;
-  let format;
-  if (/[0-9]+min/.test(req)) {
-    format = "{YYYY}.{MM}.{DD}:{HH}:{mm}";
-  } else if (/[0-9]+hour/.test(req)) {
-    format = "{YYYY}.{MM}.{DD}:{HH}";
-  } else if (/[0-9]+day/.test(req)) {
-    format = "{YYYY}.{MM}.{DD}";
-  } else if (/[0-9]+week/.test(req)) {
-    format = "{YYYY}.{MM}.{DD}";
-  } else if (/[0-9]+mon/.test(req)) {
-    format = "{YYYY}.{MM}";
-  } else if (/[0-9]+year/.test(req)) {
-    format = "{YYYY}";
-  }
-  const filename = tinydate(format)(new Date(from)) + "-" + tinydate(format)(new Date(to));
-  return path.join(periodFolder, filename);
-};
 
 function sendHeartMessage(ping) {
   ws.send(JSON.stringify({ pong: ping }));
@@ -128,10 +108,10 @@ const handleMessage = (blob) => {
         console.log("first date:", tinydate("{YYYY}.{MM}.{DD} {HH}:{mm}")(new Date(firstTime * 1000)));
         console.log("last date: ", tinydate("{YYYY}.{MM}.{DD} {HH}:{mm}")(new Date(lastTime * 1000)));
       }
-      fs.writeFileSync(getPath({ req: rep, id }), JSON.stringify(filterData, null, 2));
+      fs.writeFileSync(getPath({ period: rep, start: from * 1000, end: to * 1000, folder: periodFolder }), JSON.stringify(filterData, null, 2));
     }
   } catch (err) {
     console.log(err);
-    process.exit(1);
+    process.exit(0);
   }
 };

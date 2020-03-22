@@ -3,9 +3,9 @@ const path = require("path");
 const program = require("commander");
 const constant = require("./constant");
 program
-  .usage("[options]")
+  .usage("generate period file for fetching data of okex kline")
   .requiredOption("-p, --period <kline period>", "value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'")
-  .requiredOption("-s, --symbol <symbol>", "symbol like 'btcusdt'")
+  .requiredOption("-s, --symbol <symbol>", "symbol likes 'btc-usdt'")
   .parse(process.argv);
 
 const generateWithInterval = (period, symbol) => {
@@ -76,11 +76,11 @@ const granularityMap = new Map([
 const generate = () => {
   const { period, symbol } = program;
   if (!constant.periodRegx.test(period)) {
-    console.error("value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'");
+    console.log("value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'.");
     process.exit(0);
   }
   if (!constant.symbolRegx.test(symbol)) {
-    console.log("value of symbol is invalid, likes 'btc-usdt'");
+    console.log("value of symbol is invalid,symbol likes 'btc-usdt'.");
     process.exit(0);
   }
 
