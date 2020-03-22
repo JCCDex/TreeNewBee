@@ -1,8 +1,6 @@
 "use strict";
 
 const config = {
-  exchanges: [["huobi", "weidex"]],
-  moveBrickExchanges: ["huobi", "weidex"],
   gridProfit: 0.01, //网格利润率
   arbitrageProfit: 0.01, // 搬砖利润率
   huobi: {
