@@ -10,7 +10,7 @@
 
 1. 准备工作
 
-```javascript
+```shell
 1. git clone https://github.com/JCCDex/TreeNewBee.git
 
 2. cd src
@@ -25,7 +25,7 @@
 
 2. 在 huobi 和 weidex 之间搬砖
 
-```javascript
+```shell
 // 执行周期: 30s, 默认状态
 node huobi_arbitrage.js
 
@@ -35,10 +35,40 @@ node huobi_arbitrage.js -p 60
 
 3. 在 okex 和 weidex 之间搬砖
 
-```javascript
+```shell
 // 执行周期: 30s, 默认状态
 node okex_arbitrage.js
 
 // 执行周期: 60s
 node okex_arbitrage.js -p 60
+```
+
+4. 网格交易
+
+```shell
+# 以xrp/usdt为例
+
+# 交易对
+pair="xrp/usdt"
+# 数量上限
+amountCeiling=100
+# 数量下限
+amountFloor=10
+# 价格上限
+priceCeiling=0.15
+# 价格下限
+priceFloor=0.1
+# 挂单数量
+tradingQuantity=10
+# 买单
+type="buy"
+# 卖单
+# type="sell"
+
+# huobi
+node huobi_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling -l $priceFloor -q $tradingQuantity -t $type
+
+# okex
+node okex_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling -l $priceFloor -q $tradingQuantity -t $type
+
 ```
