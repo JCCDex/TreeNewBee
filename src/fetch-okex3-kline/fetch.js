@@ -1,0 +1,122 @@
+const fs = require("fs");
+const path = require("path");
+const readline = require("readline");
+const tinydate = require("tinydate");
+const program = require("commander");
+const axios = require("axios");
+const constant = require("./constant");
+
+const service = axios.create({
+  timeout: 30000,
+  baseURL: "https://www.okex.com"
+});
+
+service.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+program
+  .usage("[options]")
+  .requiredOption("-p, --period <kline period>", "value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'")
+  .requiredOption("-s, --symbol <symbol>", "symbol like 'btc-usdt'")
+  .parse(process.argv);
+
+const { period, symbol } = program;
+if (!constant.periodRegx.test(period)) {
+  console.error("value of period is one of '1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '1day' and 1'week'");
+  process.exit(0);
+}
+if (!constant.symbolRegx.test(symbol)) {
+  console.log("value of symbol is invalid");
+  process.exit(0);
+}
+
+const file = `./periods/${symbol}/${period}`;
+
+if (!fs.existsSync(file)) {
+  console.error(`${file} is not exist, please run 'generate-period.js' firstly.`);
+  process.exit(0);
+}
+
+const symbolFolder = path.join(__dirname, "kline-data", symbol);
+if (!fs.existsSync(symbolFolder)) {
+  fs.mkdirSync(symbolFolder);
+}
+
+const periodFolder = path.join(symbolFolder, period);
+if (!fs.existsSync(periodFolder)) {
+  fs.mkdirSync(periodFolder);
+}
+
+let rl;
+let num = 0;
+
+rl = readline.createInterface({
+  input: fs.createReadStream(file),
+  output: process.stdout,
+  terminal: false
+});
+
+rl.on("line", (line) => {
+  try {
+    const data = JSON.parse(line);
+    const file = getPath(data);
+    if (!fs.existsSync(file)) {
+      num = num + 1;
+      setTimeout(() => {
+        fetchKline(data);
+      }, num * 200);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+const getPath = (data) => {
+  const { start, end, period } = data;
+  let format;
+  if (/[0-9]+min/.test(period)) {
+    format = "{YYYY}.{MM}.{DD}:{HH}:{mm}";
+  } else if (/[0-9]+hour/.test(period)) {
+    format = "{YYYY}.{MM}.{DD}:{HH}";
+  } else if (/[0-9]+day/.test(period)) {
+    format = "{YYYY}.{MM}.{DD}";
+  } else if (/[0-9]+week/.test(period)) {
+    format = "{YYYY}.{MM}.{DD}";
+  } else if (/[0-9]+mon/.test(period)) {
+    format = "{YYYY}.{MM}";
+  } else if (/[0-9]+year/.test(period)) {
+    format = "{YYYY}";
+  }
+  const filename = tinydate(format)(new Date(start)) + "-" + tinydate(format)(new Date(end));
+  return path.join(periodFolder, filename);
+};
+
+const fetchKline = async (data) => {
+  try {
+    const { instrument_id, start, end, granularity } = data;
+    const res = await service({
+      url: `/api/spot/v3/instruments/${instrument_id}/candles`,
+      params: {
+        granularity,
+        start,
+        end
+      },
+      method: "get"
+    });
+    if (Array.isArray(res) && res.length > 0) {
+      const lastTime = res[0][0];
+      const firstTime = res[res.length - 1][0];
+      console.log("first date:", tinydate("{YYYY}.{MM}.{DD} {HH}:{mm}")(new Date(firstTime)));
+      console.log("last date: ", tinydate("{YYYY}.{MM}.{DD} {HH}:{mm}")(new Date(lastTime)));
+    }
+    fs.writeFileSync(getPath(data), JSON.stringify(res, null, 2));
+  } catch (error) {
+    console.log(error);
+  }
+};
