@@ -31,6 +31,7 @@ const config = {
     secret: ""
   },
   tradePairs: ["XRP/USDT"],
+  // 映射挂单最大数量限制
   amountLimit: {
     "XRP/USDT": {
       maxAmount: 10

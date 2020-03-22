@@ -1,23 +1,44 @@
+<!-- markdownlint-disable MD029 -->
+
 # TreeNewBee
 
 这是个吹牛逼的项目,anyway，就是这个意思
 
 谨以此项目名称纪念各种对我们吹牛逼但是没有实现的团队和个人，不仅限于搬砖。非要逼我们自己来做，ok，let's do it.
 
-使用说明：
+## 使用说明和步骤
 
-1、cd src,npm i 安装环境
+1. 准备工作
 
-2、配置文件:src/examples/js/testconfig.js
+```shell
+1. git clone https://github.com/JCCDex/TreeNewBee.git
 
-    1) "exchanges":[["huobi","weidex"]],数组里面配置要映射的交易所映射火币订单到威链：
-    填写"huobi"的{"access_key": "","secretkey": ""}信息，"jingtumHuobi"的{"address": "","secret": ""}
+2. cd src
 
-    2) "exchanges":[["okex","weidex"]],映射okex订单到威链：
-    填写"okex"的{"access_key": "","secretkey": "","privatekey": ""}信息，"jingtumOkex"的{"address": "","secret": ""}
+3. npm i
 
-    3) "moveBrickExchanges"的值:["huobi","weidex"],在火币和威链之间寻找差价并搬砖
+4. cd strategy
 
-3、cd src/examples/js/,node start -O -N -M -T,启动交易对映射，以及自动在多个交易所之间寻找最优价差并挂单,以及启动三角套利机会检测。访问
+5. config.js填写相关配置
 
-ok 交易所需要梯子。
+```
+
+2. 在 huobi 和 weidex 之间搬砖
+
+```shell
+// 执行周期: 30s, 默认状态
+node huobi_arbitrage.js
+
+// 执行周期: 60s
+node huobi_arbitrage.js -p 60
+```
+
+3. 在 okex 和 weidex 之间搬砖
+
+```shell
+// 执行周期: 30s, 默认状态
+node okex_arbitrage.js
+
+// 执行周期: 60s
+node okex_arbitrage.js -p 60
+```
