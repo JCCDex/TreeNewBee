@@ -23,27 +23,27 @@
 
 ```
 
-2. 在 huobi 和 weidex 之间搬砖
+2. 套利交易
+
+理论上基于[arbitrage](https://github.com/JCCDex/TreeNewBee/blob/master/src/strategy/factory/arbitrage.js)工厂函数, 可以构造任意两两交易所之间的套利行为, 但是目前除了`okex-weidex`和`huobi-weidex`, 其他处于未测试状态.
 
 ```shell
-// 执行周期: 30s, 默认状态
-node huobi_arbitrage.js
-
-// 执行周期: 60s
-node huobi_arbitrage.js -p 60
-```
-
-3. 在 okex 和 weidex 之间搬砖
-
-```shell
-// 执行周期: 30s, 默认状态
+# okex和weidex之间搬砖
+# 执行周期: 30s, 默认周期
 node okex_arbitrage.js
 
 // 执行周期: 60s
 node okex_arbitrage.js -p 60
+
+# huobi和weidex之间搬砖
+# 执行周期: 30s, 默认周期
+node huobi_arbitrage.js
+
+# 执行周期: 60s
+node huobi_arbitrage.js -p 60
 ```
 
-4. 网格交易
+3. 网格交易
 
 ```shell
 # 以xrp/usdt为例
