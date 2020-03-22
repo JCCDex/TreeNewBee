@@ -1,7 +1,13 @@
 "use strict";
+const program = require("commander");
 const ccxt = require("../ccxt");
 const config = require("./config");
 const ArbitrageFactory = require("./arbitrage");
+
+program
+  .description("arbitrage between huobi and weidex")
+  .option("-p, --period <run period>", "run period, is number", 30)
+  .parse(process.argv);
 
 const weidex = new ccxt["weidex"]({
   address: config.jingtumArbitrage.address,
@@ -26,6 +32,8 @@ const huobipro = new ccxt["huobipro"]({
   hostname: config.huobi.hostname
 });
 
+const { period } = program;
+
 const arbitrage = ArbitrageFactory(huobipro, weidex);
 arbitrage.run();
-setInterval(arbitrage.run, 30000);
+setInterval(arbitrage.run, Number(period) * 1000);
