@@ -1,7 +1,7 @@
 const program = require("commander");
 const ccxt = require("../ccxt");
 const config = require("./config");
-const GridTradingFactory = require("./grid_trading");
+const GridTradingFactory = require("./factory/grid_trading");
 
 const huobipro = new ccxt["huobipro"]({
   apiKey: config.huobi.access_key,

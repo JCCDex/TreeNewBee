@@ -1,7 +1,7 @@
 const program = require("commander");
 const ccxt = require("../ccxt");
 const config = require("./config");
-const GridTradingFactory = require("./grid_trading");
+const GridTradingFactory = require("./factory/grid_trading");
 
 const okex3 = new ccxt["okex3"]({
   apiKey: config.okex.access_key,

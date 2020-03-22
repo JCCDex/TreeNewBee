@@ -2,7 +2,7 @@
 const program = require("commander");
 const ccxt = require("../ccxt");
 const config = require("./config");
-const ArbitrageFactory = require("./arbitrage");
+const ArbitrageFactory = require("./factory/arbitrage");
 
 program
   .description("arbitrage between huobi and weidex")

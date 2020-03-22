@@ -1,5 +1,5 @@
 const BigNumber = require("bignumber.js");
-const config = require("./config");
+const config = require("../config");
 const pairs = config.tradePairs;
 const profit = config.arbitrageProfit;
 
