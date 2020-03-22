@@ -40,81 +40,92 @@ const startCheck = async (pair) => {
     const weidex_base_free = weidexBalance[base].free;
     const weidex_counter_free = weidexBalance[counter].free;
 
-    console.log(`okex${base}可用余额: `, okex_base_free);
-    console.log(`okex${counter}可用余额: `, okex_counter_free);
-    console.log(`威链${base}可用余额: `, weidex_base_free);
-    console.log(`威链${counter}可用余额: `, weidex_counter_free);
+    console.log(`okex ${base}可用余额: `, okex_base_free);
+    console.log(`okex ${counter}可用余额: `, okex_counter_free);
+    console.log(`威链 ${base}可用余额: `, weidex_base_free);
+    console.log(`威链 ${counter}可用余额: `, weidex_counter_free);
 
     const markets = await Promise.all([okex3.fetchOrderBook(pair), weidex.fetchOrderBook(pair)]);
-    const [huobiMarkets, weidexMarkets] = markets;
+    const [okexMarkets, weidexMarkets] = markets;
 
     // okex最高价买一单
-    const maxHuobiBid = huobiMarkets.bids[0];
+    const maxOkexBid = okexMarkets.bids[0];
     // okex最低价买一单
-    const minHuobiAsk = huobiMarkets.asks[0];
-    // 威链最高价买一单
-    const maxWeidexBid = weidexMarkets.bids[0];
-    // 威链最低价卖一单
-    const minWeidexAsk = weidexMarkets.asks[0];
+    const minOkexAsk = okexMarkets.asks[0];
 
-    console.log(`${pair} okex最高价买单：`, maxHuobiBid);
-    console.log(`${pair} okex最低价卖单：`, minHuobiAsk);
-    console.log(`${pair} 威链最高价买单：`, maxWeidexBid);
-    console.log(`${pair} 威链最低价卖单：`, minWeidexAsk);
+    console.log(`${pair} okex最高价买单：`, maxOkexBid);
+    console.log(`${pair} okex最低价卖单：`, minOkexAsk);
+
+    const matchWeidexAsks = weidexMarkets.asks.filter((ask) => {
+      return new BigNumber(maxOkexBid[0])
+        .div(ask[0])
+        .minus(1)
+        .isGreaterThanOrEqualTo(profit);
+    });
+
+    const matchWeidexBids = weidexMarkets.bids.filter((bid) => {
+      return new BigNumber(bid[0])
+        .div(minOkexAsk[0])
+        .minus(1)
+        .isGreaterThanOrEqualTo(profit);
+    });
+
+    console.log("matchWeidexAsks: ", matchWeidexAsks);
+    console.log("matchWeidexBids: ", matchWeidexBids);
 
     // 威链买okex卖
     // 比较威链最低卖单和okex最高买单
-    if (
-      new BigNumber(maxHuobiBid[0])
-        .div(minWeidexAsk[0])
-        .minus(1)
-        .isGreaterThanOrEqualTo(profit)
-    ) {
+    if (matchWeidexAsks.length > 0) {
       // 威链买okex卖
       // 以XRP/USDT为例
       // 威链上用usdt买xrp, okex上卖xrp
       console.log("威链买okex卖");
-      const [weidexPrice, weidexAmount] = minWeidexAsk;
-      const [okexPrice, okexAmount] = maxHuobiBid;
+      const weidexPrice = matchWeidexAsks[matchWeidexAsks.length - 1][0];
+      const weidexAmount = matchWeidexAsks.map((ask) => ask[1]).reduce((total, amount) => new BigNumber(total).plus(amount).toNumber());
+      console.log("weidex price:", weidexPrice);
+      console.log("weidex match total amount:", weidexAmount);
+      const [okexPrice, okexAmount] = maxOkexBid;
       let amount = weidexAmount > okexAmount ? okexAmount : weidexAmount;
       amount = new BigNumber(amount).gt(okex_base_free) ? okex_base_free : amount;
 
-      if (new BigNumber(amount).multipliedBy(weidexPrice).lt(weidex_counter_free)) {
+      if (new BigNumber(amount).multipliedBy(weidexPrice).gt(weidex_counter_free)) {
+        console.log(`威链${counter}余额不足`);
         return;
       }
 
       if (new BigNumber(amount).multipliedBy(okexPrice).lt(costMin)) {
+        console.log(`不符合Okex最小挂单额`);
         return;
       }
 
       await okex3.createOrder(pair, "limit", "sell", amount, okexPrice);
-      await weidex.createOrder(pair, "buy", amount, weidexPrice);
+      await weidex.createOrder(pair, "buy", amount, new BigNumber(weidexPrice).multipliedBy(1.001).toNumber());
     }
     // 威链卖okex买
     // 比较威链最高买单和okex最低卖单
-    else if (
-      new BigNumber(maxWeidexBid[0])
-        .div(minHuobiAsk[0])
-        .minus(1)
-        .isGreaterThanOrEqualTo(profit)
-    ) {
+    else if (matchWeidexBids.length > 0) {
       // 威链卖okex买
       // 以XRP/USDT为例
       // okex上用usdt买xrp, 威链上卖xrp
       console.log("威链卖okex买");
-      const [weidexPrice, weidexAmount] = maxWeidexBid;
-      const [okexPrice, okexAmount] = minHuobiAsk;
+      const weidexPrice = matchWeidexBids[matchWeidexBids.length - 1][0];
+      const weidexAmount = matchWeidexBids.map((bid) => bid[1]).reduce((total, amount) => new BigNumber(total).plus(amount).toNumber());
+      console.log("weidex price:", weidexPrice);
+      console.log("weidex match total amount:", weidexAmount);
+      const [okexPrice, okexAmount] = minOkexAsk;
       let amount = weidexAmount > okexAmount ? okexAmount : weidexAmount;
       amount = new BigNumber(amount).gt(weidex_base_free) ? weidex_base_free : amount;
 
-      if (new BigNumber(amount).multipliedBy(okexPrice).lt(okex_counter_free)) {
+      if (new BigNumber(amount).multipliedBy(okexPrice).gt(okex_counter_free)) {
+        console.log(`Okex ${counter}余额不足`);
         return;
       }
       if (new BigNumber(amount).multipliedBy(okexPrice).lt(costMin)) {
+        console.log(`不符合Okex最小挂单额`);
         return;
       }
       await okex3.createOrder(pair, "limit", "buy", amount, okexPrice);
-      await weidex.createOrder(pair, "sell", amount, weidexPrice);
+      await weidex.createOrder(pair, "sell", amount, new BigNumber(weidexPrice).multipliedBy(0.999).toNumber());
     }
   } catch (error) {
     console.log(error);
