@@ -272,8 +272,7 @@ module.exports = class weidex extends Exchange {
       fee: fee
     };
   }
-
-  async createOrder(symbol, tradeType, num, price) {
+  async createOrder(symbol, type, side, num, price = undefined, params = {}) {
     await this.loadMarkets();
     const market = this.market(symbol);
     const retry = 3;
@@ -285,7 +284,7 @@ module.exports = class weidex extends Exchange {
     const counter = market.quoteId.toLowerCase();
     const sum = this.round(amount * price, 15);
     try {
-      const hash = await JCCExchange.createOrder(address, secret, amount, base, counter, sum, tradeType);
+      const hash = await JCCExchange.createOrder(address, secret, amount, base, counter, sum, side);
       console.log("hash:" + hash);
       return hash;
     } catch (error) {

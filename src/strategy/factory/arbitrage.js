@@ -82,17 +82,19 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
         console.log("weidex price:", weidexPrice);
         console.log("weidex match total amount:", weidexAmount);
         const [targetPrice, targetAmount] = maxTargetBid;
-        let amount = new BigNumber(weidexAmount).gt(targetAmount) ? targetAmount : weidexAmount;
-        amount = new BigNumber(amount).gt(target_base_free) ? target_base_free : amount;
+        let amount = new BigNumber(weidexAmount);
+        amount = amount.gt(targetAmount) ? new BigNumber(targetAmount) : amount;
+        amount = amount.gt(target_base_free) ? new BigNumber(target_base_free) : amount;
 
-        if (new BigNumber(amount).lt(amountMin) || new BigNumber(amount).multipliedBy(targetPrice).lt(costMin)) {
+        // 检查挂单数量和总额是否符合目标交易所要求
+        if (amount.lt(amountMin) || amount.multipliedBy(targetPrice).lt(costMin)) {
           console.log(`不符合${targetName}最小挂单数量或最小挂单总额`);
           return;
         }
 
         // 检查weidex counter数量
         if (
-          new BigNumber(amount)
+          amount
             .multipliedBy(weidexPrice)
             .multipliedBy(1.001)
             .gt(weidex_counter_free)
@@ -101,8 +103,8 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
           return;
         }
 
-        await targetExchange.createOrder(pair, "limit", "sell", amount, targetPrice);
-        await weidexExchange.createOrder(pair, "buy", amount, new BigNumber(weidexPrice).multipliedBy(1.001).toNumber());
+        await targetExchange.createOrder(pair, "limit", "sell", amount.toNumber(), targetPrice);
+        await weidexExchange.createOrder(pair, "limit", "buy", amount.toNumber(), new BigNumber(weidexPrice).multipliedBy(1.001).toNumber());
       }
       // weidex卖, 目标交易所买
       else if (matchWeidexBids.length > 0) {
@@ -114,23 +116,24 @@ const ArbitrageFactory = (targetExchange, weidexExchange) => {
         console.log("weidex price:", weidexPrice);
         console.log("weidex match total amount:", weidexAmount);
         const [targetPrice, targetAmount] = minTargetAsk;
-        let amount = new BigNumber(weidexAmount).gt(targetAmount) ? targetAmount : weidexAmount;
-        amount = new BigNumber(amount).gt(weidex_base_free) ? weidex_base_free : amount;
+        let amount = new BigNumber(weidexAmount);
+        amount = amount.gt(targetAmount) ? new BigNumber(targetAmount) : amount;
+        amount = amount.gt(weidex_base_free) ? new BigNumber(weidex_base_free) : amount;
 
         // 检查挂单数量和总额是否符合目标交易所要求
-        if (new BigNumber(amount).lt(amountMin) || new BigNumber(amount).multipliedBy(targetPrice).lt(costMin)) {
+        if (amount.lt(amountMin) || amount.multipliedBy(targetPrice).lt(costMin)) {
           console.log(`不符合${targetName}最小挂单数量或最小挂单总额`);
           return;
         }
 
         // 检查目标交易所counter数量
-        if (new BigNumber(amount).multipliedBy(targetPrice).gt(target_counter_free)) {
+        if (amount.multipliedBy(targetPrice).gt(target_counter_free)) {
           console.log(`${targetName} ${counter}余额不足`);
           return;
         }
 
-        await targetExchange.createOrder(pair, "limit", "buy", amount, targetPrice);
-        await weidexExchange.createOrder(pair, "sell", amount, new BigNumber(weidexPrice).multipliedBy(0.999).toNumber());
+        await targetExchange.createOrder(pair, "limit", "buy", amount.toNumber(), targetPrice);
+        await weidexExchange.createOrder(pair, "limit", "sell", amount.toNumber(), new BigNumber(weidexPrice).multipliedBy(0.999).toNumber());
       }
     } catch (error) {
       console.log(error);

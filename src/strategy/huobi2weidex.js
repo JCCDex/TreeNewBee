@@ -60,7 +60,7 @@ const mappingPair = async (pair) => {
   for (const bid of bids) {
     const [price, amount] = bid;
     try {
-      const res = await weidex.createOrder(pair, "buy", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
+      const res = await weidex.createOrder(pair, "limit", "buy", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
       console.log("映射成功：", res);
     } catch (error) {
       console.log("映射失败：", error);
@@ -72,7 +72,7 @@ const mappingPair = async (pair) => {
   for (const ask of asks) {
     const [price, amount] = ask;
     try {
-      const res = await weidex.createOrder(pair, "buy", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
+      const res = await weidex.createOrder(pair, "limit", "buy", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
       console.log("映射成功：", res);
     } catch (error) {
       console.log("映射失败：", error);

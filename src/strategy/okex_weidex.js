@@ -57,7 +57,7 @@ subscribeInst.on("okexOrder", async (order) => {
           subscribeInst.emit("okexOrder", res);
           try {
             console.log(`开始挂威链卖单, 交易对: ${symbol}, 数量: ${filled}, 价格: ${price}`);
-            await weidex.createOrder(symbol, "sell", filled, price);
+            await weidex.createOrder(symbol, "limit", "sell", filled, price);
           } catch (error) {
             console.log("威链卖单失败:", error);
           }
@@ -68,7 +68,7 @@ subscribeInst.on("okexOrder", async (order) => {
           subscribeInst.emit("okexOrder", res);
           try {
             console.log(`开始挂威链买单, 交易对: ${symbol}, 数量: ${filled}, 价格: ${price}`);
-            await weidex.createOrder(symbol, "buy", filled, price);
+            await weidex.createOrder(symbol, "limit", "buy", filled, price);
           } catch (error) {
             console.log("威链买单失败:", error);
           }
