@@ -31,8 +31,12 @@
    # 执行周期: 30s, 默认周期
    node okex_arbitrage.js
 
-   // 执行周期: 60s
+   # 执行周期: 60s
    node okex_arbitrage.js -p 60
+
+   # 指定配置文件
+   path=""
+   node okex_arbitrage.js -p 60 -f $path
 
    # huobi和weidex之间搬砖
    # 执行周期: 30s, 默认周期
@@ -40,6 +44,10 @@
 
    # 执行周期: 60s
    node huobi_arbitrage.js -p 60
+
+   # 指定配置文件
+   path=""
+   node huobi_arbitrage.js -p 60 -f $path
    ```
 
 3. 网格交易
@@ -63,11 +71,15 @@
    type="buy"
    # 卖单
    # type="sell"
+   # 配置文件(可选)
+   path=""
 
    # huobi
-   node huobi_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling -l $priceFloor -q $tradingQuantity -t $type
+   node huobi_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling
+   -l $priceFloor -q $tradingQuantity -t $type -f $path
 
    # okex
-   node okex_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling -l $priceFloor -q $tradingQuantity -t $type
+   node okex_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling
+   -l $priceFloor -q $tradingQuantity -t $type -f $path
 
    ```

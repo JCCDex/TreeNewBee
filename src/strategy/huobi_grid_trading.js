@@ -1,5 +1,5 @@
 const program = require("commander");
-const loadConfig = require("./loadConfig");
+const loadConfig = require("./utils/loadConfig");
 const ccxt = require("../ccxt");
 const GridTradingFactory = require("./factory/grid_trading");
 

@@ -1,6 +1,6 @@
 "use strict";
 const program = require("commander");
-const loadConfig = require("./loadConfig");
+const loadConfig = require("./utils/loadConfig");
 const ccxt = require("../ccxt");
 const ArbitrageFactory = require("./factory/arbitrage");
 
