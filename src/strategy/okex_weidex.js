@@ -1,5 +1,5 @@
 const sleep = require("sleep");
-const ccxt = require("ccxt");
+const Okex3 = require("ccxt").okex3;
 const Weidex = require("../js/weidex");
 const config = require("./config");
 const SubscribeFactory = require("jcc_rpc").SubscribeFactory;
@@ -12,7 +12,7 @@ const weidex = new Weidex({
   enableRateLimit: true
 });
 
-const okex3 = new ccxt.okex3({
+const okex3 = new Okex3({
   apiKey: config.okex.access_key,
   secret: config.okex.secretkey,
   verbose: false,

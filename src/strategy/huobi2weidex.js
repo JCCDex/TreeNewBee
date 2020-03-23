@@ -1,7 +1,35 @@
-const ccxt = require("ccxt");
+const assert = require("assert");
+const program = require("commander");
+const Huobipro = require("ccxt").huobipro;
 const Weidex = require("../js/weidex");
-const config = require("./config");
-const amountLimit = config.amountLimit;
+const MappingFactory = require("./factory/mapping");
+const loadConfig = require("./utils/loadConfig");
+
+program
+  .description("mapping order from huobi to weidex")
+  .option("-s, --scaling <number>", "mapping scaling, positive integer")
+  .option("-l, --amountLimit <number>", "max amount limit when mapping", 10)
+  .option("-c, --cancel", "whether cancel all orders before mapping", false)
+  .option("-p, --period <number>", "run period", 10 * 60 * 1000)
+  .option("-f, --file <path>", "config file")
+  .parse(process.argv);
+
+const scaling = Number(program.scaling);
+const amountLimit = Number(program.amountLimit);
+const period = Number(program.period);
+const cancel = program.cancel;
+
+assert(Number.isInteger(scaling) && scaling > 0, "scaling need be positive integer.");
+assert(!Number.isNaN(amountLimit) && amountLimit > 0, "amountLimit need be positive.");
+
+let config;
+
+try {
+  config = loadConfig(program.file);
+} catch (error) {
+  console.log(error);
+  process.exit(0);
+}
 
 const weidex = new Weidex({
   address: config.jingtumHuobi.address,
@@ -9,7 +37,7 @@ const weidex = new Weidex({
   enableRateLimit: true
 });
 
-const huobipro = new ccxt.huobipro({
+const huobipro = new Huobipro({
   apiKey: config.huobi.access_key,
   secret: config.huobi.secretkey,
   verbose: false,
@@ -26,61 +54,7 @@ const huobipro = new ccxt.huobipro({
   hostname: config.huobi.hostname
 });
 
-const cancelWeidexOrders = async (pair) => {
-  try {
-    const orders = await weidex.fetchOpenOrders(pair);
-    for (const order of orders) {
-      try {
-        const res = await weidex.cancelOrder(order.id, pair);
-        console.log("取消成功: ", res);
-      } catch (error) {
-        console.log("取消失败: ", error);
-      }
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
+const mapping = MappingFactory(huobipro, weidex, { scaling, amountLimit, cancel });
 
-// 火币订单映射到威链上
-const startMapping = () => {
-  const pairs = config.tradePairs;
-  for (const pair of pairs) {
-    mappingPair(pair);
-  }
-};
-
-const mappingPair = async (pair) => {
-  await cancelWeidexOrders(pair);
-  const order = await huobipro.fetchOrderBook(pair);
-  const { bids, asks } = order;
-
-  const maxAmount = amountLimit[pair].maxAmount;
-  // 映射买单
-  // 等比例缩小100倍，如超过最大数量限制，映射限制的数量
-  for (const bid of bids) {
-    const [price, amount] = bid;
-    try {
-      const res = await weidex.createOrder(pair, "limit", "buy", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
-      console.log("映射成功：", res);
-    } catch (error) {
-      console.log("映射失败：", error);
-    }
-  }
-
-  // 映射卖单
-  // 等比例缩小100倍，如超过最大数量限制，映射限制的数量
-  for (const ask of asks) {
-    const [price, amount] = ask;
-    try {
-      const res = await weidex.createOrder(pair, "limit", "buy", amount / 100 > maxAmount ? maxAmount : amount / 100, price);
-      console.log("映射成功：", res);
-    } catch (error) {
-      console.log("映射失败：", error);
-    }
-  }
-};
-
-startMapping();
-// 60分钟映射一次
-setInterval(startMapping, 60 * 60 * 1000);
+mapping.run(config.tradePairs);
+setInterval(mapping.run, period * 1000, config.tradePairs);

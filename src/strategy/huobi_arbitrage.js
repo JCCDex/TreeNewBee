@@ -1,7 +1,7 @@
 "use strict";
 const program = require("commander");
 const loadConfig = require("./utils/loadConfig");
-const ccxt = require("ccxt");
+const Huobipro = require("ccxt").huobipro;
 const Weidex = require("../js/weidex");
 const ArbitrageFactory = require("./factory/arbitrage");
 
@@ -27,7 +27,7 @@ const weidex = new Weidex({
   enableRateLimit: true
 });
 
-const huobipro = new ccxt.huobipro({
+const huobipro = new Huobipro({
   apiKey: config.huobi.access_key,
   secret: config.huobi.secretkey,
   verbose: false,

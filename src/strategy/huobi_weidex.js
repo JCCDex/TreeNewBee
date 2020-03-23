@@ -1,5 +1,5 @@
 const sleep = require("sleep");
-const ccxt = require("ccxt");
+const Huobipro = require("ccxt").huobipro;
 const Weidex = require("../js/weidex");
 const config = require("./config");
 const SubscribeFactory = require("jcc_rpc").SubscribeFactory;
@@ -12,7 +12,7 @@ const weidex = new Weidex({
   enableRateLimit: true
 });
 
-const huobipro = new ccxt.huobipro({
+const huobipro = new Huobipro({
   apiKey: config.huobi.access_key,
   secret: config.huobi.secretkey,
   verbose: false,
