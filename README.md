@@ -83,3 +83,26 @@
    -l $priceFloor -q $tradingQuantity -t $type -f $path
 
    ```
+
+4. 映射
+
+   ```shell
+   # 缩放倍数
+   scaling=100
+   # 每笔最大数量
+   amountLimit=10
+   # 执行周期, 60s
+   period=60
+   # 配置文件(可选)
+   path=""
+
+   # huobi->weidex
+   node huobi2weidex.js -s $scaling -l $amountLimit -p $period -f $path
+   # 若映射前取消所有挂单
+   node huobi2weidex.js -s $scaling -l $amountLimit -p $period -f $path -c
+
+   # okex->weidex
+   node okex2weidex.js -s $scaling -l $amountLimit -p $period -f $path
+    # 若映射前取消所有挂单
+   node okex2weidex.js -s $scaling -l $amountLimit -p $period -f $path -c
+   ```

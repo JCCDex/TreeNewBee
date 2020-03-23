@@ -10,7 +10,7 @@ program
   .option("-s, --scaling <number>", "mapping scaling, positive integer")
   .option("-l, --amountLimit <number>", "max amount limit when mapping", 10)
   .option("-c, --cancel", "whether cancel all orders before mapping", false)
-  .option("-p, --period <number>", "run period", 10 * 60 * 1000)
+  .option("-p, --period <number>", "run period", 10 * 60)
   .option("-f, --file <path>", "config file")
   .parse(process.argv);
 
