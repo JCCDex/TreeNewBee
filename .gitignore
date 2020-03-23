@@ -116,3 +116,5 @@ src/fetch-okex-kline/kline-data/**/*
 src/fetch-okex-kline/periods/**/*
 !src/fetch-okex-kline/periods/.gitkeep
 
+src/strategy/jccdexConfig.json
+
