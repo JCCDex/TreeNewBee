@@ -104,17 +104,17 @@ dist
 .tern-port
 .DS_Store
 
-src/fetch-huobi-kline/kline-data/**/*
-!src/fetch-huobi-kline/kline-data/.gitkeep
+src/fetch-kline/huobi/kline-data/**/*
+!src/fetch-kline/huobi/kline-data/.gitkeep
 
-src/fetch-huobi-kline/periods/**/*
-!src/fetch-huobi-kline/periods/.gitkeep
+src/fetch-kline/huobi/periods/**/*
+!src/fetch-kline/huobi/periods/.gitkeep
 
-src/fetch-okex-kline/kline-data/**/*
-!src/fetch-okex-kline/kline-data/.gitkeep
+src/fetch-kline/okex/kline-data/**/*
+!src/fetch-kline/okex/kline-data/.gitkeep
 
-src/fetch-okex-kline/periods/**/*
-!src/fetch-okex-kline/periods/.gitkeep
+src/fetch-kline/okex/periods/**/*
+!src/fetch-kline/okex/periods/.gitkeep
 
 src/strategy/jccdexConfig.json
 
