@@ -1,7 +1,8 @@
 "use strict";
 const program = require("commander");
 const loadConfig = require("./utils/loadConfig");
-const ccxt = require("../ccxt");
+const ccxt = require("ccxt");
+const Weidex = require("../js/weidex");
 const ArbitrageFactory = require("./factory/arbitrage");
 
 program
@@ -11,7 +12,6 @@ program
   .parse(process.argv);
 
 const { period, file } = program;
-
 let config;
 
 try {
@@ -21,13 +21,13 @@ try {
   process.exit(0);
 }
 
-const weidex = new ccxt["weidex"]({
+const weidex = new Weidex({
   address: config.jingtumArbitrage.address,
   secret: config.jingtumArbitrage.secret,
   enableRateLimit: true
 });
 
-const huobipro = new ccxt["huobipro"]({
+const huobipro = new ccxt.huobipro({
   apiKey: config.huobi.access_key,
   secret: config.huobi.secretkey,
   verbose: false,

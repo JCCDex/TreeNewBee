@@ -1,14 +1,15 @@
-const ccxt = require("../ccxt");
+const ccxt = require("ccxt");
+const Weidex = require("../js/weidex");
 const config = require("./config");
 const amountLimit = config.amountLimit;
 
-const weidex = new ccxt["weidex"]({
+const weidex = new Weidex({
   address: config.jingtumHuobi.address,
   secret: config.jingtumHuobi.secret,
   enableRateLimit: true
 });
 
-const huobipro = new ccxt["huobipro"]({
+const huobipro = new ccxt.huobipro({
   apiKey: config.huobi.access_key,
   secret: config.huobi.secretkey,
   verbose: false,
@@ -43,7 +44,7 @@ const cancelWeidexOrders = async (pair) => {
 
 // 火币订单映射到威链上
 const startMapping = () => {
-  let pairs = config.tradePairs;
+  const pairs = config.tradePairs;
   for (const pair of pairs) {
     mappingPair(pair);
   }

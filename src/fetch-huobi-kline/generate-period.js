@@ -12,10 +12,10 @@ const generateWithInterval = (period, symbol, interval) => {
   // 2017-07-28.01:00:00
   let from = 1501174800;
 
-  let now = Math.floor(new Date().getTime() / 1000);
+  const now = Math.floor(new Date().getTime() / 1000);
 
   // 火币最多返回300条数据，时间间隔设置为299 * interval
-  let sum = 299 * interval;
+  const sum = 299 * interval;
   const req = `market.${symbol}.kline.${period}`;
   if (!constant.klineTopicRegx.test(req)) {
     console.log("req is invalid.");
@@ -62,9 +62,9 @@ const generateWithInterval = (period, symbol, interval) => {
 
 const generateWithoutInterval = (period, symbol) => {
   // 2017-07-28.01:00:00
-  let from = 1501174800;
+  const from = 1501174800;
 
-  let now = Math.floor(new Date().getTime() / 1000);
+  const now = Math.floor(new Date().getTime() / 1000);
   const req = `market.${symbol}.kline.${period}`;
 
   if (!constant.klineTopicRegx.test(req)) {

@@ -1,6 +1,6 @@
 const program = require("commander");
 const loadConfig = require("./utils/loadConfig");
-const ccxt = require("../ccxt");
+const ccxt = require("ccxt");
 const GridTradingFactory = require("./factory/grid_trading");
 
 program
@@ -26,7 +26,7 @@ try {
   process.exit(0);
 }
 
-const okex3 = new ccxt["okex3"]({
+const okex3 = new ccxt.okex3({
   apiKey: config.okex.access_key,
   secret: config.okex.secretkey,
   verbose: false,

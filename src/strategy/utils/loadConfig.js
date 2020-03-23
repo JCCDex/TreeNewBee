@@ -11,7 +11,7 @@ module.exports = (file) => {
         config = JSON.parse(fs.readFileSync(path.join(__dirname, file), { encoding: "utf8" }));
       }
     } else {
-      config = require("./config");
+      config = require("../config");
     }
     return config;
   } catch (error) {

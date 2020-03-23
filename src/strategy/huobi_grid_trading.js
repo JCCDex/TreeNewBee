@@ -1,6 +1,6 @@
 const program = require("commander");
 const loadConfig = require("./utils/loadConfig");
-const ccxt = require("../ccxt");
+const ccxt = require("ccxt");
 const GridTradingFactory = require("./factory/grid_trading");
 
 program
@@ -26,7 +26,7 @@ try {
   process.exit(0);
 }
 
-const huobipro = new ccxt["huobipro"]({
+const huobipro = new ccxt.huobipro({
   apiKey: config.huobi.access_key,
   secret: config.huobi.secretkey,
   verbose: false,

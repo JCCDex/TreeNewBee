@@ -1,14 +1,15 @@
-const ccxt = require("../ccxt");
+const ccxt = require("ccxt");
+const Weidex = require("../js/weidex");
 const config = require("./config");
 const amountLimit = config.amountLimit;
 
-const weidex = new ccxt["weidex"]({
+const weidex = new Weidex({
   address: config.jingtumOkex.address,
   secret: config.jingtumOkex.secret,
   enableRateLimit: true
 });
 
-const okex3 = new ccxt["okex3"]({
+const okex3 = new ccxt.okex3({
   apiKey: config.okex.access_key,
   secret: config.okex.secretkey,
   verbose: false,
@@ -35,7 +36,7 @@ const cancelWeidexOrders = async (pair) => {
 
 // okex订单映射到威链上
 const startMapping = () => {
-  let pairs = config.tradePairs;
+  const pairs = config.tradePairs;
   for (const pair of pairs) {
     mappingPair(pair);
   }

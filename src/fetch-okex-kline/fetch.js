@@ -54,10 +54,9 @@ if (!fs.existsSync(periodFolder)) {
   fs.mkdirSync(periodFolder);
 }
 
-let rl;
 let num = 0;
 
-rl = readline.createInterface({
+const rl = readline.createInterface({
   input: fs.createReadStream(file),
   output: process.stdout,
   terminal: false
@@ -80,9 +79,10 @@ rl.on("line", (line) => {
 
 const fetchKline = async (data) => {
   try {
-    const { instrument_id, start, end, granularity } = data;
+    const { start, end, granularity } = data;
+    const id = data.instrument_id;
     const res = await service({
-      url: `/api/spot/v3/instruments/${instrument_id}/candles`,
+      url: `/api/spot/v3/instruments/${id}/candles`,
       params: {
         granularity,
         start,

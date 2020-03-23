@@ -12,12 +12,12 @@ const generateWithInterval = (period, symbol) => {
   // 2017-10-01
   let from = 1506787200000;
 
-  let now = new Date().getTime();
+  const now = new Date().getTime();
 
   const interval = granularityMap.get(period);
 
   // okex最多返回200条数据，时间间隔设置为199 * interval
-  let sum = 199 * interval * 1000; // ms
+  const sum = 199 * interval * 1000; // ms
 
   const symbolFolder = path.join(__dirname, "periods", symbol);
   if (!fs.existsSync(symbolFolder)) {

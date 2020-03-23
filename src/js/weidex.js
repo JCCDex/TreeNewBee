@@ -6,8 +6,8 @@
 
 //  ---------------------------------------------------------------------------
 
-const Exchange = require("./base/Exchange");
-const { AuthenticationError, ExchangeError, ExchangeNotAvailable, InvalidOrder, OrderNotFound, InsufficientFunds, RequestTimeout, ArgumentsRequired } = require("./base/errors");
+const Exchange = require("ccxt/js/base/Exchange");
+const { AuthenticationError, ExchangeError, ExchangeNotAvailable, InvalidOrder, OrderNotFound, InsufficientFunds, RequestTimeout, ArgumentsRequired } = require("ccxt/js/base/errors");
 const JCCExchange = require("jcc_exchange").JCCExchange;
 
 const rpcNodes = ["http://39.98.243.77:50333", "http://39.104.188.146:50333", "http://58.243.201.56:5050", "http://47.74.51.71:50333"];
@@ -19,7 +19,7 @@ module.exports = class weidex extends Exchange {
       name: "WEIDEX",
       countries: ["CN"],
       rateLimit: 2000,
-      userAgent: this.userAgents["chrome39"],
+      userAgent: this.userAgents.chrome39,
       address: "",
       secret: "",
       configs: {
@@ -176,21 +176,21 @@ module.exports = class weidex extends Exchange {
   async fetchBalance() {
     await this.loadMarkets();
     const response = await this.publicGetExchangeBalancesAddress({ address: this.address });
-    const balances = response["data"];
+    const balances = response.data;
     const result = { info: response };
     for (let i = 0; i < balances.length; i++) {
       const balance = balances[i];
       const currencyId = this.safeString(balance, "currency");
       let code = this.safeCurrencyCode(currencyId);
       code = code.replace(/^J/, "");
-      let account = undefined;
+      let account;
       if (code in result) {
         account = result[code];
       } else {
         account = this.account();
       }
-      account["free"] = this.safeFloat(balance, "value");
-      account["used"] = this.safeFloat(balance, "freezed");
+      account.free = this.safeFloat(balance, "value");
+      account.used = this.safeFloat(balance, "freezed");
       result[code] = account;
     }
     return this.parseBalance(result);
@@ -209,7 +209,7 @@ module.exports = class weidex extends Exchange {
     }
     await this.loadMarkets();
     const response = await this.privateGetWalletOfferUuid({ p: p, s: 100, w: this.address });
-    let orders = undefined;
+    let orders;
     if (response.code === "0") {
       orders = this.safeValue(response, "data", []);
       if (orders.count > 0) {
@@ -225,8 +225,8 @@ module.exports = class weidex extends Exchange {
   parseOrder(order, market = undefined) {
     const id = this.safe_integer(order, "seq");
     const type = "default";
-    let symbol = undefined;
-    let side = undefined;
+    let symbol;
+    let side;
     const timestamp = this.safeInteger(order, "time");
     let amount = 0;
     let counterAmount = 0;
@@ -272,6 +272,7 @@ module.exports = class weidex extends Exchange {
       fee: fee
     };
   }
+
   async createOrder(symbol, type, side, num, price = undefined, params = {}) {
     await this.loadMarkets();
     const market = this.market(symbol);
@@ -365,7 +366,7 @@ module.exports = class weidex extends Exchange {
       }
     }
     url =
-      this.implodeParams(this.urls["api"][api], {
+      this.implodeParams(this.urls.api[api], {
         hostname: this.hostname
       }) + url;
     return { url: url, method: method, body: body, headers: headers };
@@ -402,9 +403,9 @@ module.exports = class weidex extends Exchange {
       if (status === "error") {
         const code = this.safeString(response, "err-code");
         const feedback = this.id + " " + body;
-        this.throwExactlyMatchedException(this.exceptions["exact"], code, feedback);
+        this.throwExactlyMatchedException(this.exceptions.exact, code, feedback);
         const message = this.safeString(response, "err-msg");
-        this.throwExactlyMatchedException(this.exceptions["exact"], message, feedback);
+        this.throwExactlyMatchedException(this.exceptions.exact, message, feedback);
         throw new ExchangeError(feedback);
       }
     }
@@ -420,12 +421,12 @@ module.exports = class weidex extends Exchange {
     const market = this.market(symbol);
     const response = await this.publicGetInfoDepthCurrencyType({ currency: market.id, type: limit });
     if (response.success) {
-      if (!response["data"]) {
+      if (!response.data) {
         throw new ExchangeError(this.id + " fetchOrderBook() returned empty response: " + this.json(response));
       }
       const orderbook = this.safeValue(response, "data");
-      const result = this.parseOrderBook(orderbook, orderbook["ts"], "bids", "asks", "price", "amount");
-      result["nonce"] = orderbook["version"];
+      const result = this.parseOrderBook(orderbook, orderbook.ts, "bids", "asks", "price", "amount");
+      result.nonce = orderbook.version;
       return result;
     } else {
       throw new ExchangeError(this.id + " fetchOrderBook() returned unrecognized response: " + this.json(response));
@@ -484,7 +485,7 @@ module.exports = class weidex extends Exchange {
             max: undefined
           },
           price: {
-            min: Math.pow(10, -precision["price"]),
+            min: Math.pow(10, -precision.price),
             max: undefined
           },
           cost: {
@@ -508,8 +509,8 @@ module.exports = class weidex extends Exchange {
   parseOrderDetail(order) {
     const id = this.safe_integer(order, "Sequence");
     const type = "default";
-    let symbol = undefined;
-    let side = undefined;
+    let symbol;
+    let side;
     const timestamp = undefined;
     let amount = 0;
     let counterAmount = 0;

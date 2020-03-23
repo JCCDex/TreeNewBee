@@ -1,17 +1,18 @@
 const sleep = require("sleep");
-const ccxt = require("../ccxt");
+const ccxt = require("ccxt");
+const Weidex = require("../js/weidex");
 const config = require("./config");
 const SubscribeFactory = require("jcc_rpc").SubscribeFactory;
 const subscribeInst = SubscribeFactory.init();
 subscribeInst.setMaxListeners(100);
 
-const weidex = new ccxt["weidex"]({
+const weidex = new Weidex({
   address: config.jingtumOkex.address,
   secret: config.jingtumOkex.secret,
   enableRateLimit: true
 });
 
-const okex3 = new ccxt["okex3"]({
+const okex3 = new ccxt.okex3({
   apiKey: config.okex.access_key,
   secret: config.okex.secretkey,
   verbose: false,
@@ -20,8 +21,8 @@ const okex3 = new ccxt["okex3"]({
   password: config.okex.privatekey
 });
 
-let amount = Math.floor(Math.random() * 10 + 30);
-let stepIndex = 10; //深度排序
+const amount = Math.floor(Math.random() * 10 + 30);
+const stepIndex = 10; // 深度排序
 
 const getBidPrice = (orderBook, index) => {
   let price = null;
@@ -86,24 +87,24 @@ subscribeInst.on("okexOrder", async (order) => {
 // 在okex上挂单，监听挂单状态，成交后立即在okex和威链上挂相反的单子，考虑到目前账号挂单手续费1‰，吃单手续费1.5‰，
 // 成交后卖单价格上浮1%，买单价格下调1%
 const startCreateOrder = async function() {
-  let pairs = config.tradePairs;
+  const pairs = config.tradePairs;
 
   for (const pair of pairs) {
     try {
-      //根据资金判断是买还是卖
+      // 根据资金判断是买还是卖
       const orderBookAndBalance = await Promise.all([okex3.fetchOrderBook(pair), okex3.fetchBalance()]);
       const [orderBook, balance] = orderBookAndBalance;
       if (orderBook && balance) {
-        let base = pair.split("/")[0];
-        let counter = pair.split("/")[1];
-        let balance_base = balance[base];
-        let balance_counter = balance[counter];
-        if (balance_base.free > 0 && balance_counter.free > 0) {
+        const base = pair.split("/")[0];
+        const counter = pair.split("/")[1];
+        const baseBalance = balance[base];
+        const counterBalance = balance[counter];
+        if (baseBalance.free > 0 && counterBalance.free > 0) {
           let orderInfo;
           const bidPrice = getBidPrice(orderBook, stepIndex);
           const askPrice = getAskPrice(orderBook, stepIndex);
           if (bidPrice && askPrice) {
-            if (bidPrice && balance_base.free * bidPrice < balance_counter.free) {
+            if (bidPrice && baseBalance.free * bidPrice < counterBalance.free) {
               console.log(`开始挂okex买单, 交易对: ${pair}, 数量: ${amount}, 价格: ${bidPrice}`);
               orderInfo = await okex3.createOrder(pair, "limit", "buy", amount, bidPrice);
             } else {
@@ -121,7 +122,7 @@ const startCreateOrder = async function() {
 };
 
 const cancelAllOrders = async () => {
-  let pairs = config.tradePairs;
+  const pairs = config.tradePairs;
   for (const pair of pairs) {
     const orders = await Promise.all([okex3.fetchOpenOrders(pair), weidex.fetchOrders(pair)]);
     const [okexOrders, weidexOrders] = orders;
