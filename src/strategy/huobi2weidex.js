@@ -4,6 +4,7 @@ const Huobipro = require("ccxt").huobipro;
 const Weidex = require("../js/weidex");
 const MappingFactory = require("./factory/mapping");
 const loadConfig = require("./utils/loadConfig");
+const updateWeidexHosts = require("./utils/updateWeidexHosts");
 
 program
   .description("mapping order from huobi to weidex")
@@ -34,7 +35,8 @@ try {
 const weidex = new Weidex({
   address: config.jingtumHuobi.address,
   secret: config.jingtumHuobi.secret,
-  enableRateLimit: true
+  enableRateLimit: true,
+  timeout: 30000
 });
 
 const huobipro = new Huobipro({
@@ -53,6 +55,8 @@ const huobipro = new Huobipro({
   },
   hostname: config.huobi.hostname
 });
+
+updateWeidexHosts.init(weidex);
 
 const mapping = MappingFactory(huobipro, weidex, { scaling, amountLimit, cancel });
 

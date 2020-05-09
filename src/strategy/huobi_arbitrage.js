@@ -1,5 +1,6 @@
 "use strict";
 const program = require("commander");
+const updateWeidexHosts = require("./utils/updateWeidexHosts");
 const loadConfig = require("./utils/loadConfig");
 const Huobipro = require("ccxt").huobipro;
 const Weidex = require("../js/weidex");
@@ -24,7 +25,8 @@ try {
 const weidex = new Weidex({
   address: config.jingtumArbitrage.address,
   secret: config.jingtumArbitrage.secret,
-  enableRateLimit: true
+  enableRateLimit: true,
+  timeout: 30000
 });
 
 const huobipro = new Huobipro({
@@ -43,6 +45,8 @@ const huobipro = new Huobipro({
   },
   hostname: config.huobi.hostname
 });
+
+updateWeidexHosts.init(weidex);
 
 const arbitrage = ArbitrageFactory(huobipro, weidex, config.arbitrageProfit);
 arbitrage.run(config.tradePairs);

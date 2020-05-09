@@ -4,6 +4,7 @@ const Okex3 = require("ccxt").okex3;
 const Weidex = require("../js/weidex");
 const MappingFactory = require("./factory/mapping");
 const loadConfig = require("./utils/loadConfig");
+const updateWeidexHosts = require("./utils/updateWeidexHosts");
 
 program
   .description("mapping order from okex to weidex")
@@ -34,7 +35,8 @@ try {
 const weidex = new Weidex({
   address: config.jingtumOkex.address,
   secret: config.jingtumOkex.secret,
-  enableRateLimit: true
+  enableRateLimit: true,
+  timeout: 30000
 });
 
 const okex3 = new Okex3({
@@ -45,6 +47,8 @@ const okex3 = new Okex3({
   enableRateLimit: true,
   password: config.okex.privatekey
 });
+
+updateWeidexHosts.init(weidex);
 
 const mapping = MappingFactory(okex3, weidex, { scaling, amountLimit, cancel });
 
