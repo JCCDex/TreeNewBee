@@ -23,8 +23,8 @@ module.exports = class weidex extends Exchange {
       address: "",
       secret: "",
       configs: {
-        exHosts: ["ejia348ffbda04.jccdex.cn", "ejib28c81e1ce5.jccdex.cn", "ejio68dd7d047f.jccdex.cn"],
-        infoHosts: ["ijiijhg293cabc.jccdex.cn", "ijijjh6753cabc.jccdex.cn", "ijikj98kyq754c.jccdex.cn", "ijin8hn7hcgyxk.jccdex.cn", "ijia3b44eb75ef.jccdex.cn", "ijib059e8792d5.jccdex.cn"]
+        exHosts: ["eje115qd327ed93.swtc.top"],
+        infoHosts: ["ije115qd93cabc.swtc.top"]
       },
       coinpairConfigs: {
         transPairs: [
