@@ -45,4 +45,11 @@ const huobipro = new Huobipro({
 
 const gridTrading = GridTradingFactory(huobipro);
 
-gridTrading.startTrading({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type });
+gridTrading
+  .startTrading({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type })
+  .then((orders) => {
+    console.log(orders);
+  })
+  .catch((error) => {
+    console.log(error);
+  });

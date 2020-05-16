@@ -9,11 +9,12 @@ const GridTradingFactory = (Exchange) => {
       .minus(min)
       .multipliedBy(Math.random())
       .plus(min)
-      .toFixed(3);
+      .toFixed(5);
     return value;
   };
 
   const createOrders = async ({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type }) => {
+    const orders = [];
     try {
       const marketsInfo = await Exchange.loadMarkets();
       const limits = marketsInfo[pair].limits;
@@ -32,16 +33,22 @@ const GridTradingFactory = (Exchange) => {
           }
           let res = await Exchange.createOrder(pair, "limit", type, amount, price);
           console.log("挂单成功:", res);
-        } catch (error) {
-          console.log("挂单失败:", error.message);
-        }
+          orders.push({
+            id: res.id,
+            pair,
+            type,
+            amount,
+            price
+          });
+        } catch (error) {}
       }
     } catch (error) {
       console.log(error);
     }
+    return orders;
   };
 
-  const startTrading = ({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type }) => {
+  const startTrading = async ({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type }) => {
     pair = pair.toUpperCase();
     highAmount = new BigNumber(highAmount);
     lowAmount = new BigNumber(lowAmount);
@@ -56,8 +63,8 @@ const GridTradingFactory = (Exchange) => {
     assert(BigNumber.isBigNumber(highPrice) && highPrice.gt(lowPrice), "highPrice should be number and more than lowPrice");
     assert(Number.isInteger(quantity) && quantity > 0, "quantity shoule be positive integer");
     assert(/^(buy|sell)$/.test(type), "type shoule be 'buy' or 'sell'");
-
-    createOrders({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type });
+    const orders = await createOrders({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type });
+    return orders;
   };
 
   return {
