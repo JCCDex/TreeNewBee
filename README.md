@@ -82,6 +82,26 @@
    node okex_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling
    -l $priceFloor -q $tradingQuantity -t $type -f $path
 
+   # 网格自动交易，成交后按照指定收益率自动挂单
+
+   # 收益率(5%)
+   profit=0.05
+
+   # 轮询周期(默认 60\*1000ms, 单位 ms)
+   timer=60*1000
+
+   # huobi
+   node huobi_auto_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling
+   -l $priceFloor -q $tradingQuantity -t $type -f $path -P $profit -T $timer
+
+   # weidex
+   node weidex_auto_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling
+   -l $priceFloor -q $tradingQuantity -t $type -f $path -P $profit -T $timer
+
+   # okex
+   node okex_auto_grid_trading.js -p $pair -H $amountCeiling -L $amountFloor -h $priceCeiling
+   -l $priceFloor -q $tradingQuantity -t $type -f $path -P $profit -T $timer
+
    ```
 
 4. 映射
