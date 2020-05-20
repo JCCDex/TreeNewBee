@@ -13,11 +13,12 @@ program
   .requiredOption("-q, --quantity <number>", "trading quantity")
   .requiredOption("-t, --type <string>", "trading type, should be 'buy' or 'sell'")
   .requiredOption("-f, --file <path>", "config file")
-  .requiredOption("-P, --profit <path>", "收益率")
+  .requiredOption("-SP, --sellProfit <path>", "卖出收益率")
+  .requiredOption("-BP, --buyProfit <path>", "买进收益率")
   .requiredOption("-T, --timer <path>", "请求周期，单位ms", 60 * 1000)
   .parse(process.argv);
 
-const { pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type, file, profit, timer } = program;
+const { pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type, file, sellProfit, buyProfit, timer } = program;
 
 let config;
 
@@ -37,6 +38,6 @@ const okex3 = new Okex3({
   password: config.okex.privatekey
 });
 
-const gridTrading = AutoGridTradingFactory(okex3, profit, timer);
+const gridTrading = AutoGridTradingFactory(okex3, { sellProfit, buyProfit }, timer);
 
 gridTrading.startTrading({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type });

@@ -15,11 +15,12 @@ program
   .requiredOption("-q, --quantity <number>", "trading quantity")
   .requiredOption("-t, --type <string>", "trading type, should be 'buy' or 'sell'")
   .requiredOption("-f, --file <path>", "config file")
-  .requiredOption("-P, --profit <path>", "收益率")
+  .requiredOption("-SP, --sellProfit <path>", "卖出收益率")
+  .requiredOption("-BP, --buyProfit <path>", "买进收益率")
   .requiredOption("-T, --timer <path>", "请求周期，单位ms", 60 * 1000)
   .parse(process.argv);
 
-const { pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type, file, profit, timer } = program;
+const { pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type, file, sellProfit, buyProfit, timer } = program;
 
 let config;
 
@@ -68,7 +69,7 @@ const watchOrders = async () => {
           console.log("id不存在：", id);
           const { pair, type, amount, price } = orderMap.get(id);
           const Type = type === "buy" ? "sell" : "buy";
-          const Price = Type === "sell" ? new BigNumber(price).multipliedBy(new BigNumber(1).plus(profit)).toString() : new BigNumber(price).multipliedBy(new BigNumber(1).minus(profit)).toString();
+          const Price = Type === "sell" ? new BigNumber(price).multipliedBy(new BigNumber(1).plus(sellProfit)).toString() : new BigNumber(price).multipliedBy(new BigNumber(1).minus(buyProfit)).toString();
           const res = await weidex.createOrder(pair, "limit", Type, amount, Price);
           console.log(price, Price);
           console.log("挂单成功：", res);
