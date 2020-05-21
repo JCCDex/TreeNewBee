@@ -6,12 +6,6 @@ const ArbitrageFactory = (fromExchange, toExchange, arbitrageProfit) => {
   const toName = toExchange.name;
   const profit = arbitrageProfit;
 
-  const run = (pairs) => {
-    for (const pair of pairs) {
-      startArbitrage(pair);
-    }
-  };
-
   const startArbitrage = async (pair) => {
     console.log(`------${pair}套利开始------`);
     try {
@@ -158,7 +152,7 @@ const ArbitrageFactory = (fromExchange, toExchange, arbitrageProfit) => {
   };
 
   return {
-    run
+    startArbitrage
   };
 };
 

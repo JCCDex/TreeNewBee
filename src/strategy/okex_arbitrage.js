@@ -7,12 +7,14 @@ const Weidex = require("../js/weidex");
 const ArbitrageFactory = require("./factory/arbitrage");
 
 program
-  .description("arbitrage between okex and weidex")
-  .option("-p, --period <number>", "run period", 30)
+  .description("arbitrage between huobi and weidex")
+  .option("-p, --pair <number>", "交易对")
+  .option("-a, --arbitrageProfit <number>", "收益率")
+  .option("-P, --period <number>", "run period", 30)
   .option("-f, --file <path>", "config file")
   .parse(process.argv);
 
-const { period, file } = program;
+const { period, file, arbitrageProfit, pair } = program;
 
 let config;
 
@@ -41,6 +43,6 @@ const okex3 = new Okex3({
 
 updateWeidexHosts.init(weidex);
 
-const arbitrage = ArbitrageFactory(okex3, weidex, config.arbitrageProfit);
-arbitrage.run(config.tradePairs);
-setInterval(arbitrage.run, Number(period) * 1000, config.tradePairs);
+const arbitrage = ArbitrageFactory(okex3, weidex, arbitrageProfit);
+arbitrage.startArbitrage(pair);
+setInterval(arbitrage.startArbitrage, Number(period) * 1000, pair);

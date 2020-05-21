@@ -8,11 +8,13 @@ const ArbitrageFactory = require("./factory/arbitrage");
 
 program
   .description("arbitrage between huobi and weidex")
-  .option("-p, --period <number>", "run period", 30)
+  .option("-p, --pair <number>", "交易对")
+  .option("-a, --arbitrageProfit <number>", "收益率")
+  .option("-P, --period <number>", "run period", 30)
   .option("-f, --file <path>", "config file")
   .parse(process.argv);
 
-const { period, file } = program;
+const { period, file, arbitrageProfit, pair } = program;
 let config;
 
 try {
@@ -48,6 +50,6 @@ const huobipro = new Huobipro({
 
 updateWeidexHosts.init(weidex);
 
-const arbitrage = ArbitrageFactory(huobipro, weidex, config.arbitrageProfit);
-arbitrage.run(config.tradePairs);
-setInterval(arbitrage.run, Number(period) * 1000, config.tradePairs);
+const arbitrage = ArbitrageFactory(huobipro, weidex, arbitrageProfit);
+arbitrage.startArbitrage(pair);
+setInterval(arbitrage.startArbitrage, Number(period) * 1000, pair);
