@@ -58,10 +58,49 @@ gridTrading
     console.log(error);
   });
 
+const fetchAllOrders = async () => {
+  let hasMore = true;
+  let page = 0;
+  const symbol = "";
+  let allOrders = [];
+  while (hasMore) {
+    try {
+      const orders = await weidex.fetchOrders(symbol, page);
+      if (orders) {
+        if (orders.length > 0) {
+          page = page + 1;
+          allOrders = [...allOrders, ...orders];
+        } else {
+          hasMore = false;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  return allOrders;
+};
+
+fetchAllOrders()
+  .then((orders) => {
+    for (const order of orders) {
+      orderMap.set(order.info.hash, {
+        id: order.info.hash,
+        pair: order.symbol,
+        type: order.side,
+        amount: order.amount,
+        price: order.price
+      });
+    }
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
 const watchOrders = async () => {
   try {
     const ids = Array.from(orderMap.keys());
-    const orders = await weidex.fetchOrders();
+    const orders = await fetchAllOrders();
     for (const id of ids) {
       try {
         const has = orders.some((order) => order.info.hash === id);

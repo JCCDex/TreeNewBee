@@ -785,8 +785,8 @@ module.exports = class weidex extends Exchange {
     const response = await this.privateGetWalletOfferUuid({ p: p, s: 100, w: this.address });
     let orders;
     if (response.code === "0") {
-      orders = this.safeValue(response, "data", []);
-      if (orders.count > 0) {
+      orders = this.safeValue(response, "data", { list: [] });
+      if (orders.list.length > 0) {
         return this.parseOrders(orders.list, undefined, undefined, 100);
       } else {
         return [];
@@ -808,12 +808,12 @@ module.exports = class weidex extends Exchange {
     const filled = 0;
     const status = "open";
     if (order.flag === 1) {
-      symbol = order.takerPays.currency + "/" + order.takerGets.currency;
+      symbol = this.getCurrency(order.takerPays) + "/" + this.getCurrency(order.takerGets);
       amount = this.safeFloat(order.takerPays, "value");
       counterAmount = this.safeFloat(order.takerGets, "value");
       side = "buy";
     } else {
-      symbol = order.takerGets.currency + "/" + order.takerPays.currency;
+      symbol = this.getCurrency(order.takerGets) + "/" + this.getCurrency(order.takerPays);
       amount = this.safeFloat(order.takerGets, "value");
       counterAmount = this.safeFloat(order.takerPays, "value");
       side = "sell";
@@ -849,6 +849,7 @@ module.exports = class weidex extends Exchange {
 
   async createOrder(symbol, type, side, num, price = undefined, params = {}) {
     await this.loadMarkets();
+    symbol = symbol.replace(/^J/gi, "");
     const market = this.market(symbol);
     const retry = 3;
     JCCExchange.init(rpcNodes, retry);
@@ -1130,7 +1131,7 @@ module.exports = class weidex extends Exchange {
 
   getCurrency(obj) {
     if (obj.currency) {
-      return obj.currency;
+      return obj.currency.replace(/^J/gi, "");
     } else {
       return "SWT";
     }
