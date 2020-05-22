@@ -51,8 +51,8 @@ gridTrading
         orderMap.set(order.id, order);
       }
       console.log(orderMap);
-      setInterval(watchOrders, timer);
     }
+    setInterval(watchOrders, timer);
   })
   .catch((error) => {
     console.log(error);
@@ -110,6 +110,7 @@ const watchOrders = async () => {
   try {
     const ids = Array.from(orderMap.keys());
     const orders = await fetchAllOrders();
+    console.log("当前挂单长度：", orders.length);
     for (const id of ids) {
       try {
         const has = orders.some((order) => order.info.hash === id);

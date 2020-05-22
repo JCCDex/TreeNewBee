@@ -10,7 +10,7 @@ const Exchange = require("ccxt/js/base/Exchange");
 const { AuthenticationError, ExchangeError, ExchangeNotAvailable, InvalidOrder, OrderNotFound, InsufficientFunds, RequestTimeout, ArgumentsRequired } = require("ccxt/js/base/errors");
 const JCCExchange = require("jcc_exchange").JCCExchange;
 
-const rpcNodes = ["http://39.98.243.77:50333", "http://39.104.188.146:50333", "http://47.74.51.71:50333"];
+const rpcNodes = ["https://srje115qd43qw2.swtc.top", "https://srje071qdew231.swtc.top"];
 
 module.exports = class weidex extends Exchange {
   describe() {
