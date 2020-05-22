@@ -108,7 +108,7 @@
 
 <script>
 const WebSocket = require("isomorphic-ws");
-const ws = new WebSocket(`ws://${window.location.hostname}:9099`);
+const ws = new WebSocket(`ws://58.243.201.56:9099`);
 ws.onopen = () => {
   ws.onmessage = (message) => {
     console.log(message);
