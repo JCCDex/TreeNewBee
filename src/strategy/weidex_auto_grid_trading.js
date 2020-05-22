@@ -52,7 +52,6 @@ gridTrading
       }
       console.log(orderMap);
     }
-    setInterval(watchOrders, timer);
   })
   .catch((error) => {
     console.log(error);
@@ -141,3 +140,6 @@ const watchOrders = async () => {
     console.log(error);
   }
 };
+
+setInterval(watchOrders, timer);
+
