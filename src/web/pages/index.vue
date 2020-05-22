@@ -32,6 +32,7 @@
               </el-form-item>
               <el-form-item label="交易对">
                 <el-select v-model="gridData.pair" placeholder="交易对">
+                  <el-option label="XRP/SWTC" value="XRP/SWTC"></el-option>
                   <el-option label="XRP/USDT" value="XRP/USDT"></el-option>
                 </el-select>
               </el-form-item>
@@ -146,7 +147,7 @@ export default {
       },
       gridData: {
         exchange: "weidex",
-        pair: "XRP/USDT",
+        pair: "XRP/SWTC",
         highAmount: "",
         lowAmount: "",
         highPrice: "",

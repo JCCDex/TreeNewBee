@@ -18,8 +18,8 @@ const GridTradingFactory = (Exchange) => {
     try {
       const marketsInfo = await Exchange.loadMarkets();
       const limits = marketsInfo[pair].limits;
-      const costMin = limits.cost.min;
-      const amountMin = limits.amount.min;
+      const costMin = limits.cost.min || 0;
+      const amountMin = limits.amount.min || 0;
       console.log(`${targetName} cost min: `, costMin);
       console.log(`${targetName} amount min: `, amountMin);
 
@@ -31,6 +31,8 @@ const GridTradingFactory = (Exchange) => {
             console.log(`不符合${targetName}最小挂单数量或最小挂单总额`);
             continue;
           }
+
+          console.log(pair);
           let res = await Exchange.createOrder(pair, "limit", type, amount, price);
           console.log("挂单成功:", res);
           orders.push({
@@ -40,7 +42,9 @@ const GridTradingFactory = (Exchange) => {
             amount,
             price
           });
-        } catch (error) {}
+        } catch (error) {
+          console.log(error);
+        }
       }
     } catch (error) {
       console.log(error);

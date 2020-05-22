@@ -858,11 +858,13 @@ module.exports = class weidex extends Exchange {
     JCCExchange.init(rpcNodes, retry);
     const address = this.address;
     const secret = this.secret;
-    const amount = this.round(num, 15);
+    const amount = this.round(num, 5);
     const base = market.baseId.toLowerCase();
     const counter = market.quoteId.toLowerCase();
-    console.log(base, counter);
-    const sum = this.round(amount * price, 15);
+
+    const sum = this.round(amount * price, 5);
+    console.log(base, counter, amount, sum, side);
+
     const hash = await JCCExchange.createOrder(address, secret, amount, base, counter, sum, side);
     console.log("hash:" + hash);
     return { id: hash };
