@@ -43,7 +43,7 @@ const GridTradingFactory = (Exchange) => {
             price
           });
         } catch (error) {
-          console.log(error);
+          console.log(error.message);
         }
       }
     } catch (error) {
