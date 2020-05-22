@@ -61,11 +61,20 @@ gridTrading
 const fetchAllOrders = async () => {
   let hasMore = true;
   let page = 0;
-  const symbol = "";
   let allOrders = [];
+  await weidex.loadMarkets();
+  const market = weidex.market(pair);
+  let base = market.baseId.toLowerCase();
+  let counter = market.quoteId.toLowerCase();
+  if (base === "swt") {
+    base = "swtc";
+  }
+  if (counter === "swt") {
+    counter = "swtc";
+  }
   while (hasMore) {
     try {
-      const orders = await weidex.fetchOrders(symbol, page);
+      const orders = await weidex.fetchOrders(base + "-" + counter, page);
       if (orders) {
         if (orders.length > 0) {
           page = page + 1;
@@ -109,8 +118,8 @@ const watchOrders = async () => {
           const { pair, type, amount, price } = orderMap.get(id);
           const Type = type === "buy" ? "sell" : "buy";
           const Price = Type === "sell" ? new BigNumber(price).multipliedBy(new BigNumber(1).plus(sellProfit)).toString() : new BigNumber(price).multipliedBy(new BigNumber(1).minus(buyProfit)).toString();
+          console.log("pair:", pair);
           const res = await weidex.createOrder(pair, "limit", Type, amount, Price);
-          console.log(price, Price);
           console.log("挂单成功：", res);
           orderMap.set(res.id, {
             id: res.id,

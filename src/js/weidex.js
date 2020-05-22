@@ -774,7 +774,7 @@ module.exports = class weidex extends Exchange {
     return this.fetchOpenOrders(_symbol, _p);
   }
 
-  async fetchOpenOrders(symbol = " ", p = 0) {
+  async fetchOpenOrders(symbol = "", p = 0) {
     if (symbol === undefined) {
       throw new ArgumentsRequired(" fetchOpenOrders requires a symbol argument");
     }
@@ -782,7 +782,11 @@ module.exports = class weidex extends Exchange {
       throw new ArgumentsRequired(" fetchOpenOrders requires a symbol argument");
     }
     await this.loadMarkets();
-    const response = await this.privateGetWalletOfferUuid({ p: p, s: 100, w: this.address });
+    const params = { p: p, s: 100, w: this.address };
+    if (symbol) {
+      params.c = symbol;
+    }
+    const response = await this.privateGetWalletOfferUuid(params);
     let orders;
     if (response.code === "0") {
       orders = this.safeValue(response, "data", { list: [] });
@@ -849,7 +853,6 @@ module.exports = class weidex extends Exchange {
 
   async createOrder(symbol, type, side, num, price = undefined, params = {}) {
     await this.loadMarkets();
-    symbol = symbol.replace(/^J/gi, "");
     const market = this.market(symbol);
     const retry = 3;
     JCCExchange.init(rpcNodes, retry);
