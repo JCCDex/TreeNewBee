@@ -9,6 +9,7 @@
 const Exchange = require("ccxt/js/base/Exchange");
 const { AuthenticationError, ExchangeError, ExchangeNotAvailable, InvalidOrder, OrderNotFound, InsufficientFunds, RequestTimeout, ArgumentsRequired } = require("ccxt/js/base/errors");
 const JCCExchange = require("jcc_exchange").JCCExchange;
+const BigNumber = require("bignumber.js");
 
 const rpcNodes = ["http://39.98.243.77:50333", "http://39.104.188.146:50333", "http://47.74.51.71:50333"];
 
@@ -763,8 +764,9 @@ module.exports = class weidex extends Exchange {
       } else {
         account = this.account();
       }
-      account.free = this.safeFloat(balance, "value");
+      account.total = this.safeFloat(balance, "value");
       account.used = this.safeFloat(balance, "freezed");
+      account.free = new BigNumber(account.total).minus(account.used).toNumber();
       result[code] = account;
     }
     return this.parseBalance(result);

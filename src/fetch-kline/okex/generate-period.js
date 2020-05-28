@@ -24,7 +24,7 @@ const generateWithInterval = (period, symbol) => {
     fs.mkdirSync(symbolFolder);
   }
 
-  while (now - from > sum) {
+  while (now - from >= sum) {
     const to = from + sum;
     try {
       const data = {
@@ -42,21 +42,21 @@ const generateWithInterval = (period, symbol) => {
     }
   }
 
-  if (from < now) {
-    try {
-      const data = {
-        instrument_id: symbol,
-        start: new Date(from).toISOString(),
-        end: new Date(now).toISOString(),
-        period,
-        granularity: interval
-      };
-      fs.appendFileSync(path.join(symbolFolder, period), JSON.stringify(data) + "\n");
-    } catch (error) {
-      console.log(error);
-      process.exit(0);
-    }
-  }
+//   if (from < now) {
+//     try {
+//       const data = {
+//         instrument_id: symbol,
+//         start: new Date(from).toISOString(),
+//         end: new Date(now).toISOString(),
+//         period,
+//         granularity: interval
+//       };
+//       fs.appendFileSync(path.join(symbolFolder, period), JSON.stringify(data) + "\n");
+//     } catch (error) {
+//       console.log(error);
+//       process.exit(0);
+//     }
+//   }
 };
 
 const granularityMap = new Map([
