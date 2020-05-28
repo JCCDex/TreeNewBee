@@ -27,7 +27,7 @@ const generateWithInterval = (period, symbol, interval) => {
     fs.mkdirSync(symbolFolder);
   }
 
-  while (now - from > sum) {
+  while (now - from >= sum) {
     const to = from + sum;
     try {
       const data = {
@@ -44,20 +44,20 @@ const generateWithInterval = (period, symbol, interval) => {
     }
   }
 
-  if (from < now) {
-    try {
-      const data = {
-        from,
-        to: now,
-        id: `${from}/${now}`,
-        req
-      };
-      fs.appendFileSync(path.join(symbolFolder, period), JSON.stringify(data) + "\n");
-    } catch (error) {
-      console.log(error);
-      process.exit(0);
-    }
-  }
+//   if (from < now) {
+//     try {
+//       const data = {
+//         from,
+//         to: now,
+//         id: `${from}/${now}`,
+//         req
+//       };
+//       fs.appendFileSync(path.join(symbolFolder, period), JSON.stringify(data) + "\n");
+//     } catch (error) {
+//       console.log(error);
+//       process.exit(0);
+//     }
+//   }
 };
 
 const generateWithoutInterval = (period, symbol) => {
