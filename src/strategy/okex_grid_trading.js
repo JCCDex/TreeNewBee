@@ -38,7 +38,7 @@ const okex3 = new Okex3({
 const gridTrading = GridTradingFactory(okex3);
 
 gridTrading
-  .startTrading({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type })
+  .startTrading({ pair: pair.toUpperCase(), highAmount, lowAmount, highPrice, lowPrice, quantity, type })
   .then((orders) => {
     console.log(orders);
   })

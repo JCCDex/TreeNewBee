@@ -49,7 +49,8 @@ const huobipro = new Huobipro({
 });
 
 updateWeidexHosts.init(weidex);
+// huobipro.proxy = "https://cors-anywhere.herokuapp.com";
 
 const arbitrage = ArbitrageFactory(huobipro, weidex, arbitrageProfit);
-arbitrage.startArbitrage(pair);
-setInterval(arbitrage.startArbitrage, Number(period) * 1000, pair);
+arbitrage.startArbitrage(pair.toUpperCase());
+setInterval(arbitrage.startArbitrage, Number(period) * 1000, pair.toUpperCase());

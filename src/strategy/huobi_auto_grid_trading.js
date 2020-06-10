@@ -48,4 +48,4 @@ const huobipro = new Huobipro({
 
 const gridTrading = AutoGridTradingFactory(huobipro, { sellProfit, buyProfit }, timer);
 
-gridTrading.startTrading({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type });
+gridTrading.startTrading({ pair: pair.toUpperCase(), highAmount, lowAmount, highPrice, lowPrice, quantity, type });

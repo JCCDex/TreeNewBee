@@ -46,7 +46,7 @@ const huobipro = new Huobipro({
 const gridTrading = GridTradingFactory(huobipro);
 
 gridTrading
-  .startTrading({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type })
+  .startTrading({ pair: pair.toUpperCase(), highAmount, lowAmount, highPrice, lowPrice, quantity, type })
   .then((orders) => {
     console.log(orders);
   })

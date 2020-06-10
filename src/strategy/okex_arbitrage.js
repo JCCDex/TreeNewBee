@@ -44,5 +44,5 @@ const okex3 = new Okex3({
 updateWeidexHosts.init(weidex);
 
 const arbitrage = ArbitrageFactory(okex3, weidex, arbitrageProfit);
-arbitrage.startArbitrage(pair);
-setInterval(arbitrage.startArbitrage, Number(period) * 1000, pair);
+arbitrage.startArbitrage(pair.toUpperCase());
+setInterval(arbitrage.startArbitrage, Number(period) * 1000, pair.toUpperCase());

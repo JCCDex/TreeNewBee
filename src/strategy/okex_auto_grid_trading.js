@@ -40,4 +40,4 @@ const okex3 = new Okex3({
 
 const gridTrading = AutoGridTradingFactory(okex3, { sellProfit, buyProfit }, timer);
 
-gridTrading.startTrading({ pair, highAmount, lowAmount, highPrice, lowPrice, quantity, type });
+gridTrading.startTrading({ pair: pair.toUpperCase(), highAmount, lowAmount, highPrice, lowPrice, quantity, type });
