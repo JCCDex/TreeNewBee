@@ -68,6 +68,13 @@ ws.on("open", () => {
       console.log(error);
     }
   });
+
+  rl.on("close", () => {
+    setTimeout(() => {
+      console.log("close socket");
+      ws.close();
+    }, num * 100 + 60 * 1000);
+  });
 });
 
 ws.on("message", (blob) => {
