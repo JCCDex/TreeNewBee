@@ -5,7 +5,7 @@
 # 以btcusdt, 周期1day为例
 # 周期: 1min|5min|15min|30min|60min|4hour|1day|1mon|1week|1year
 
-symbol=btcusdt
+symbol=btc-usdt
 period=1day
 node generate-period.js -s $symbol -p $period
 node fetch.js -s $symbol -p $period

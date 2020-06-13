@@ -93,15 +93,16 @@ const generateWithoutInterval = (period, symbol) => {
 };
 
 const generate = () => {
-  const { period, symbol } = program;
+  let { period, symbol } = program;
   if (!constant.periodRegx.test(period)) {
     console.log("value of period must be one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'.");
     process.exit(0);
   }
   if (!constant.symbolRegx.test(symbol)) {
-    console.log("value of symbol is invalid, symbol likes 'btcusdt'.");
+    console.log("value of symbol is invalid, symbol likes 'btc-usdt'.");
     process.exit(0);
   }
+  symbol = symbol.split("-").join("");
   switch (period) {
     case "1min":
       generateWithInterval(period, symbol, 60);

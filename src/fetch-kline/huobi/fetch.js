@@ -12,18 +12,20 @@ const { getPath } = require("../util");
 program
   .description("fetch kline data of huobi")
   .requiredOption("-p, --period <string>", "value of period is one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'")
-  .requiredOption("-s, --symbol <string>", "symbol likes 'btcusdt'")
+  .requiredOption("-s, --symbol <string>", "symbol likes 'btc-usdt'")
   .parse(process.argv);
 
-const { period, symbol } = program;
+let { period, symbol } = program;
 if (!constant.periodRegx.test(period)) {
   console.log("value of period must be one of '1min', '5min', '15min', '30min', '60min', '4hour', '1day', '1mon', '1week' and '1year'.");
   process.exit(0);
 }
 if (!constant.symbolRegx.test(symbol)) {
-  console.log("value of symbol is invalid, symbol likes 'btcusdt'.");
+  console.log("value of symbol is invalid, symbol likes 'btc-usdt'.");
   process.exit(0);
 }
+
+symbol = symbol.split("-").join("");
 
 const file = `./periods/${symbol}/${period}`;
 
