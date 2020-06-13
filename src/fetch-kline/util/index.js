@@ -4,7 +4,9 @@ const tinydate = require("tinydate");
 module.exports = {
   getPath: ({ start, end, period, folder }) => {
     let format;
-    if (/[0-9]+min/.test(period)) {
+    if (/60min/.test(period)) {
+      format = "{YYYY}.{MM}.{DD}:{HH}";
+    } else if (/[0-9]+min/.test(period)) {
       format = "{YYYY}.{MM}.{DD}:{HH}:{mm}";
     } else if (/[0-9]+hour/.test(period)) {
       format = "{YYYY}.{MM}.{DD}:{HH}";

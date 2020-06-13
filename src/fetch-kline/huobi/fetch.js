@@ -27,7 +27,7 @@ if (!constant.symbolRegx.test(symbol)) {
 
 symbol = symbol.split("-").join("");
 
-const file = `./periods/${symbol}/${period}`;
+const file = path.join(__dirname, `./periods/${symbol}/${period}`);
 
 if (!fs.existsSync(file)) {
   console.log(`${file} is not exist, please run 'generate-period.js' firstly.`);
