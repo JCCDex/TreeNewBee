@@ -83,6 +83,16 @@ const ArbitrageFactory = (fromExchange, toExchange, arbitrageProfit) => {
         amount = amount.gt(fromAmount) ? new BigNumber(fromAmount) : amount;
         amount = amount.gt(from_base_free) ? new BigNumber(from_base_free) : amount;
 
+        // 检查weidex counter数量
+        if (
+          amount
+            .multipliedBy(toPrice)
+            .multipliedBy(1.001)
+            .gt(to_counter_free)
+        ) {
+          amount = new BigNumber(to_counter_free).div(toPrice).div(1.001);
+        }
+
         // 检查挂单数量和总额是否符合目标交易所要求
         if (amount.lt(fromAmountMin) || amount.multipliedBy(fromPrice).lt(fromCostMin)) {
           console.log(`不符合${fromName}最小挂单数量或最小挂单总额`);
@@ -94,17 +104,7 @@ const ArbitrageFactory = (fromExchange, toExchange, arbitrageProfit) => {
           console.log(`不符合${toName}最小挂单数量或最小挂单总额`);
           return;
         }
-
-        // 检查weidex counter数量
-        if (
-          amount
-            .multipliedBy(toPrice)
-            .multipliedBy(1.001)
-            .gt(to_counter_free)
-        ) {
-          console.log(`${toName} ${counter}余额不足`);
-          return;
-        }
+        console.log("amount: ", amount.toString());
 
         await fromExchange.createOrder(pair, "limit", "sell", amount.toNumber(), fromPrice);
         await toExchange.createOrder(pair, "limit", "buy", amount.toNumber(), new BigNumber(toPrice).multipliedBy(1.001).toNumber());
@@ -122,7 +122,10 @@ const ArbitrageFactory = (fromExchange, toExchange, arbitrageProfit) => {
         let amount = new BigNumber(toAmount);
         amount = amount.gt(fromAmount) ? new BigNumber(fromAmount) : amount;
         amount = amount.gt(to_base_free) ? new BigNumber(to_base_free) : amount;
-
+        // 检查目标交易所counter数量
+        if (amount.multipliedBy(fromPrice).gt(from_counter_free)) {
+          amount = new BigNumber(from_counter_free).div(fromPrice);
+        }
         // 检查挂单数量和总额是否符合目标交易所要求
         if (amount.lt(fromAmountMin) || amount.multipliedBy(fromPrice).lt(fromCostMin)) {
           console.log(`不符合${fromName}最小挂单数量或最小挂单总额`);
@@ -135,11 +138,7 @@ const ArbitrageFactory = (fromExchange, toExchange, arbitrageProfit) => {
           return;
         }
 
-        // 检查目标交易所counter数量
-        if (amount.multipliedBy(fromPrice).gt(from_counter_free)) {
-          console.log(`${fromName} ${counter}余额不足`);
-          return;
-        }
+        console.log("amount: ", amount.toString());
 
         await fromExchange.createOrder(pair, "limit", "buy", amount.toNumber(), fromPrice);
         await toExchange.createOrder(pair, "limit", "sell", amount.toNumber(), new BigNumber(toPrice).multipliedBy(0.999).toNumber());
