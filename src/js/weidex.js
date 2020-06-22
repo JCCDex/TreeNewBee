@@ -775,7 +775,7 @@ module.exports = class weidex extends Exchange {
     return this.fetchOpenOrders(_symbol, _p);
   }
 
-  async fetchOpenOrders(symbol = " ", p = 0) {
+  async fetchOpenOrders(symbol = "", p = 0) {
     if (symbol === undefined) {
       throw new ArgumentsRequired(" fetchOpenOrders requires a symbol argument");
     }
@@ -783,7 +783,14 @@ module.exports = class weidex extends Exchange {
       throw new ArgumentsRequired(" fetchOpenOrders requires a symbol argument");
     }
     await this.loadMarkets();
-    const response = await this.privateGetWalletOfferUuid({ p: p, s: 100, w: this.address });
+    const param = { p: p, s: 100, w: this.address };
+    if (symbol) {
+      const market = this.market(symbol);
+      const base = market.baseId.toUpperCase();
+      const counter = market.quoteId.toUpperCase();
+      param.c = base + "-" + counter;
+    }
+    const response = await this.privateGetWalletOfferUuid(param);
     let orders;
     if (response.code === "0") {
       orders = this.safeValue(response, "data", { list: [] });
@@ -859,7 +866,6 @@ module.exports = class weidex extends Exchange {
     const amount = this.round(num, 15);
     const base = market.baseId.toLowerCase();
     const counter = market.quoteId.toLowerCase();
-    console.log(base, counter);
     const sum = this.round(amount * price, 15);
     const hash = await JCCExchange.createOrder(address, secret, amount, base, counter, sum, side);
     console.log("hash:" + hash);
