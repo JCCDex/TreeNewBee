@@ -103,14 +103,15 @@ const passiveArbitrage = async () => {
     const market = await huobipro.fetchOrderBook(pair);
 
     const minAsk = market.asks[0];
+    const minAskPrice = minAsk[0];
 
     if (orders.length > 0) {
       const order = orders[0];
-      if (new BigNumber(minAsk).div(order.price).gte(1.01)) {
+      if (new BigNumber(minAskPrice).div(order.price).gte(1.01)) {
         console.log("cancel weidex order firstly");
         await weidex.cancelOrder(order.id);
         sleep.msleep(500);
-        const price = new BigNumber(minAsk[0]).times(1.01).toString();
+        const price = new BigNumber(minAskPrice).times(1.01).toString();
         console.log("cancel weidex order success");
         console.log("create a weidex order, price is: ", price);
         await weidex.createOrder(pair, "limit", "sell", amount, price);
@@ -119,7 +120,7 @@ const passiveArbitrage = async () => {
         console.log("order's length is more than 0, but don't need cancel");
       }
     } else {
-      const price = new BigNumber(minAsk[0]).times(1.01).toString();
+      const price = new BigNumber(minAskPrice).times(1.01).toString();
       console.log("create a weidex order, price is: ", price);
       await weidex.createOrder(pair, "limit", "sell", amount, price);
       fs.writeFileSync(path.join(__dirname, "order"), price);
