@@ -82,8 +82,22 @@ const passiveArbitrage = async () => {
     if (new BigNumber(now).gt(pre) && orders.length === 0) {
       let price = fs.readFileSync(path.join(__dirname, "order"), "utf-8");
       price = new BigNumber(price).div(1.01).toString();
-      console.log("start create an order in huobi, price is: ", price);
-      await huobipro.createOrder(pair, "limit", "buy", amount, price);
+      console.log("usdt raise: ", new BigNumber(now).minus(pre).toString());
+      if (new BigNumber(now).minus(pre).gt(5)) {
+        console.log("start create an order in huobi, price is: ", price);
+        await huobipro.createOrder(
+          pair,
+          "limit",
+          "buy",
+          new BigNumber(now)
+            .minus(pre)
+            .div(price)
+            .toString(),
+          price
+        );
+      } else {
+        console.log("not start create an order in huobi");
+      }
     }
 
     const market = await huobipro.fetchOrderBook(pair);
@@ -101,6 +115,8 @@ const passiveArbitrage = async () => {
         console.log("create a weidex order, price is: ", price);
         await weidex.createOrder(pair, "limit", "sell", amount, price);
         fs.writeFileSync(path.join(__dirname, "order"), price);
+      } else {
+        console.log("order's length is more than 0, but don't need cancel");
       }
     } else {
       const price = new BigNumber(minAsk[0]).times(1.01).toString();
