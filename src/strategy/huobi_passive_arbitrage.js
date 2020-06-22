@@ -107,7 +107,7 @@ const passiveArbitrage = async () => {
 
     if (orders.length > 0) {
       const order = orders[0];
-      if (new BigNumber(minAskPrice).div(order.price).gte(1.01)) {
+      if (new BigNumber(order.price).div(minAskPrice).lt(1.01)) {
         console.log("cancel weidex order firstly");
         await weidex.cancelOrder(order.id);
         sleep.msleep(500);
