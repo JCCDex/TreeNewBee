@@ -75,7 +75,6 @@ const passiveArbitrage = async () => {
     const [pre, now] = usdtBalance;
     console.log("pre usdt amount: ", pre);
     console.log("now usdt amount: ", now);
-    fs.writeFileSync(path.join(__dirname, "balance"), now);
 
     const orders = await weidex.fetchOpenOrders(pair.toUpperCase());
 
@@ -95,6 +94,7 @@ const passiveArbitrage = async () => {
             .toString(),
           price
         );
+        fs.writeFileSync(path.join(__dirname, "balance"), now);
       } else {
         console.log("not start create an order in huobi");
       }
