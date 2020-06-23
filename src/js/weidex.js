@@ -775,7 +775,7 @@ module.exports = class weidex extends Exchange {
     return this.fetchOpenOrders(_symbol, _p);
   }
 
-  async fetchOpenOrders(symbol = "", p = 0) {
+  async fetchOpenOrders(symbol = "", p = 0, bs = 0) {
     if (symbol === undefined) {
       throw new ArgumentsRequired(" fetchOpenOrders requires a symbol argument");
     }
@@ -789,6 +789,7 @@ module.exports = class weidex extends Exchange {
       const base = market.baseId.toUpperCase();
       const counter = market.quoteId.toUpperCase();
       param.c = base + "-" + counter;
+      param.bs = bs;
     }
     const response = await this.privateGetWalletOfferUuid(param);
     let orders;

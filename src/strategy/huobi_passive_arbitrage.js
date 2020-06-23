@@ -60,41 +60,45 @@ const getUSDTBalance = async () => {
   const counterTotal = weidexBalance[counter].total;
   let usdtAmount;
   try {
-    usdtAmount = fs.readFileSync(path.join(__dirname, "balance"), "utf-8");
+    usdtAmount = fs.readFileSync(path.join(__dirname, "usdt_balance"), "utf-8");
   } catch (error) {
     usdtAmount = counterTotal;
-    fs.writeFileSync(path.join(__dirname, "balance"), usdtAmount);
+    fs.writeFileSync(path.join(__dirname, "usdt_balance"), usdtAmount);
   }
   return [usdtAmount, counterTotal];
 };
 
-// 被动套利
-const passiveArbitrage = async () => {
+const getEthBalance = async () => {
+  const weidexBalance = await weidex.fetchBalance();
+  const base = pair.split("/")[0];
+  const baseTotal = weidexBalance[base].total;
+  let ethAmount;
   try {
-    console.log("------passive arbitrage start------");
+    ethAmount = fs.readFileSync(path.join(__dirname, "eth_balance"), "utf-8");
+  } catch (error) {
+    ethAmount = baseTotal;
+    fs.writeFileSync(path.join(__dirname, "eth_balance"), ethAmount);
+  }
+  return [ethAmount, baseTotal];
+};
+
+const ethusdtArbitrage = async () => {
+  try {
+    console.log("------eth->usdt passive arbitrage start------");
     const usdtBalance = await getUSDTBalance();
     const [pre, now] = usdtBalance;
     console.log("pre usdt amount: ", pre);
     console.log("now usdt amount: ", now);
-    const orders = await weidex.fetchOpenOrders(pair.toUpperCase());
+    const orders = await weidex.fetchOpenOrders(pair.toUpperCase(), 0, 2);
 
     if (new BigNumber(now).gt(pre) && orders.length === 0) {
-      let price = fs.readFileSync(path.join(__dirname, "order"), "utf-8");
+      let price = fs.readFileSync(path.join(__dirname, "eth-usdt-order"), "utf-8");
       price = new BigNumber(price).div(1.01).toString();
       console.log("usdt raise: ", new BigNumber(now).minus(pre).toString());
       if (new BigNumber(now).minus(pre).gt(5)) {
         console.log("start create an order in huobi, price is: ", price);
-        await huobipro.createOrder(
-          pair,
-          "limit",
-          "buy",
-          new BigNumber(now)
-            .minus(pre)
-            .div(price)
-            .toString(),
-          price
-        );
-        fs.writeFileSync(path.join(__dirname, "balance"), now);
+        await huobipro.createOrder(pair, "limit", "buy", amount, price);
+        fs.writeFileSync(path.join(__dirname, "usdt_balance"), now);
       } else {
         console.log("not start create an order in huobi");
       }
@@ -115,7 +119,7 @@ const passiveArbitrage = async () => {
         console.log("cancel weidex order success");
         console.log("create a weidex order, price is: ", price);
         await weidex.createOrder(pair, "limit", "sell", amount, price);
-        fs.writeFileSync(path.join(__dirname, "order"), price);
+        fs.writeFileSync(path.join(__dirname, "eth-usdt-order"), price);
       } else {
         console.log("order's length is more than 0, but don't need cancel");
       }
@@ -123,15 +127,74 @@ const passiveArbitrage = async () => {
       const price = new BigNumber(minAskPrice).times(1.01).toString();
       console.log("create a weidex order, price is: ", price);
       await weidex.createOrder(pair, "limit", "sell", amount, price);
-      fs.writeFileSync(path.join(__dirname, "order"), price);
+      fs.writeFileSync(path.join(__dirname, "eth-usdt-order"), price);
     }
   } catch (error) {
     console.log("error: ", error.message);
   } finally {
-    console.log("------passive arbitrage end------\n\n");
+    console.log("------eth->usdt passive arbitrage end------\n\n");
   }
 };
 
-passiveArbitrage();
+const usdtethArbitrage = async () => {
+  try {
+    console.log("------usdt->eth passive arbitrage start------");
+    const ethBalance = await getEthBalance();
+    const [pre, now] = ethBalance;
+    console.log("pre eth amount: ", pre);
+    console.log("now eth amount: ", now);
+    const orders = await weidex.fetchOpenOrders(pair.toUpperCase(), 0, 1);
+
+    if (new BigNumber(now).gt(pre) && orders.length === 0) {
+      let price = fs.readFileSync(path.join(__dirname, "usdt-eth-order"), "utf-8");
+      price = new BigNumber(price).times(1.01).toString();
+      console.log("eth raise: ", new BigNumber(now).minus(pre).toString());
+      if (new BigNumber(now).minus(pre).gt(0.04)) {
+        console.log("start create an order in huobi, price is: ", price);
+        await huobipro.createOrder(pair, "limit", "sell", amount, price);
+        fs.writeFileSync(path.join(__dirname, "eth_balance"), now);
+      } else {
+        console.log("not start create an order in huobi");
+      }
+    }
+
+    const market = await huobipro.fetchOrderBook(pair);
+
+    const maxBid = market.bids[0];
+    const maxBidPrice = maxBid[0];
+
+    if (orders.length > 0) {
+      const order = orders[0];
+      if (new BigNumber(maxBidPrice).div(order.price).lt(1.01)) {
+        console.log("cancel weidex order firstly");
+        await weidex.cancelOrder(order.id);
+        sleep.msleep(500);
+        const price = new BigNumber(maxBidPrice).times(0.99).toString();
+        console.log("cancel weidex order success");
+        console.log("create a weidex order, price is: ", price);
+        await weidex.createOrder(pair, "limit", "buy", amount, price);
+        fs.writeFileSync(path.join(__dirname, "usdt-eth-order"), price);
+      } else {
+        console.log("order's length is more than 0, but don't need cancel");
+      }
+    } else {
+      const price = new BigNumber(maxBidPrice).times(0.99).toString();
+      console.log("create a weidex order, price is: ", price);
+      await weidex.createOrder(pair, "limit", "buy", amount, price);
+      fs.writeFileSync(path.join(__dirname, "usdt-eth-order"), price);
+    }
+  } catch (error) {
+    console.log("error: ", error.message);
+  } finally {
+    console.log("------usdt->eth passive arbitrage end------\n\n");
+  }
+};
+
+// 被动套利
+const passiveArbitrage = async () => {
+  await ethusdtArbitrage();
+  sleep.sleep(30);
+  await usdtethArbitrage();
+};
 
 setInterval(passiveArbitrage, period * 60 * 1000);
