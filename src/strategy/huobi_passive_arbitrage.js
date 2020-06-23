@@ -197,4 +197,5 @@ const passiveArbitrage = async () => {
   await usdtethArbitrage();
 };
 
+passiveArbitrage();
 setInterval(passiveArbitrage, period * 60 * 1000);
