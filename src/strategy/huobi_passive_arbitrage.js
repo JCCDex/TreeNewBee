@@ -63,6 +63,7 @@ const getUSDTBalance = async () => {
     usdtAmount = fs.readFileSync(path.join(__dirname, "balance"), "utf-8");
   } catch (error) {
     usdtAmount = counterTotal;
+    fs.writeFileSync(path.join(__dirname, "balance"), usdtAmount);
   }
   return [usdtAmount, counterTotal];
 };
@@ -75,7 +76,6 @@ const passiveArbitrage = async () => {
     const [pre, now] = usdtBalance;
     console.log("pre usdt amount: ", pre);
     console.log("now usdt amount: ", now);
-
     const orders = await weidex.fetchOpenOrders(pair.toUpperCase());
 
     if (new BigNumber(now).gt(pre) && orders.length === 0) {
