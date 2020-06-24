@@ -29,8 +29,8 @@ try {
 }
 
 const weidex = new Weidex({
-  address: config.jingtumArbitrage.address,
-  secret: config.jingtumArbitrage.secret,
+  address: config.jingtumPassiveArbitrage.address,
+  secret: config.jingtumPassiveArbitrage.secret,
   enableRateLimit: true,
   timeout: 30000
 });
